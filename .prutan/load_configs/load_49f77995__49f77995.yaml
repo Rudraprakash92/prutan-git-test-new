@@ -1,0 +1,27 @@
+guid: 49f77995-52ba-4910-ae14-35b90f34f10a
+collectionGuid: 49f77995-52ba-4910-ae14-35b90f34f10a
+type: constant
+volume: 10
+duration: null
+timeout: 5000
+virtualUsers: 10
+delay: 1000
+warmup: 1000
+holdSpikeFor: null
+spikeUsers: null
+spikeInterval: null
+startAfter: null
+executionTimeout: 20000
+mode: volume
+rampUpPeriod: null
+startingValue: null
+incrementUser: null
+maximumValue: null
+minimumValue: null
+decrementUser: null
+buckets:
+- start: 0
+  end: 3000
+executionList:
+- guid: eb5ab256-6617-4e49-8b19-4ab42cd0cf31
+  uri: https://sqs.ap-south-1.amazonaws.com/432513806584/dev-team-test-queue

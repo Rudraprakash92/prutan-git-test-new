@@ -1,0 +1,23 @@
+guid: 9cf60e55-6900-45bb-8e5b-1f17fc381528
+name: empty_request
+collectionFormat: null
+collectionHeadersize: null
+collectionMessageRepType: null
+collectionAltUrl: null
+collectionIpConfig: null
+overview:
+  priority: null
+  summary: null
+  description: null
+format: null
+method: null
+endpoint: null
+contentType: null
+requestBody: null
+responseBody: null
+headers: null
+params: null
+auth: null
+preRequisite: null
+rules: null
+integration: null

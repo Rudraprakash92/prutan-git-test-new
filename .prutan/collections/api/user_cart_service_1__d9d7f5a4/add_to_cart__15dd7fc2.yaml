@@ -1,0 +1,61 @@
+guid: 15dd7fc2-04ca-4b3a-8e7d-1f20c2b168e0
+name: add_to_cart
+collectionFormat: POST
+collectionHeadersize: null
+collectionMessageRepType: null
+collectionAltUrl: null
+collectionIpConfig: null
+overview:
+  priority: null
+  summary: Adds items to cart via Core Router with request and response validation
+  description: "<h3>Type</h3><p>API</p><p></p><h3>Format</h3><p>REST</p><p></p><h2>Body</h2><p><strong>Content-Type:</strong> <code>application/json</code></p><p>The request body contains all required data to add items to a cart.</p><p>\tuserId</p><p>\t\tGenerated dynamically using an <strong>InBuiltFunction</strong></p><p>\t\t{{$generateRandomNumber(12)}}</p><p>\tsessionId</p><p>\t\tInjected from <strong>environment variables</strong></p><p>\t\t{{sessionId}}</p><p>\titems</p><p>\t\tList of products to be added to the cart</p><p>\t\tEach item includes:</p><p>\t\t\tproductId</p><p>\t\t\tquantity</p><p></p><h2>Params</h2><table style=\"border: 1px solid #000;\"><tbody><tr><td data-row=\"1\">Name</td><td data-row=\"1\">Value</td><td data-row=\"1\">Description</td></tr><tr><td data-row=\"2\">currency</td><td data-row=\"2\">USD</td><td data-row=\"2\">Currency used for cart processing</td></tr></tbody></table><p></p><h2>Headers</h2><table style=\"border: 1px solid #000;\"><tbody><tr><td data-row=\"\
+    1\">Header Name</td><td data-row=\"1\">Value</td><td data-row=\"1\">Description</td></tr><tr><td data-row=\"2\">content-type</td><td data-row=\"2\">application/json</td><td data-row=\"2\">Defines request payload format</td></tr><tr><td data-row=\"3\">X-Request-ID</td><td data-row=\"3\">76abf562-2235-435f-8aff-234c4511db44</td><td data-row=\"3\">Unique identifier for the request</td></tr></tbody></table><p></p><h2>PreRequestScript</h2><p>The pre-request script prepares and enriches the request before execution:</p><p>\tSets amount in the request body using the user balance from a previous API (get_user_details)</p><p>\tSets colleagues using the friends list from the same previous response</p><p>\tLogs product ID and full item list for debugging and traceability</p><p></p><h2>Validation</h2><p>Validations ensure both request and response correctness:</p><h3>Request Validation</h3><p>\tConfirms product IDs are correctly passed:</p><p>\t\titems[0].productId → P001</p><p>\t\titems[1].productId\
+    \ → P002</p><p>\tEnsures restricted fields (e.g. name) are not present in the request</p><h3>Response Validation</h3><p>\tVerifies cartId exists and matches the expected value</p><p>\tConfirms required response fields such as cartId and name are present</p><h3>Logs</h3><p>\tPrints request items</p><p>\tLogs full request and response bodies for debugging</p>"
+format: REST
+method: POST
+endpoint: https://dummyjson.com/carts/add
+contentType: application/json
+body: |-
+  {
+      "userId": "{{$generateRandomNumber(1)}}",
+      "sessionId": "{{sessionId}}",
+      "products": [
+          {
+              "id": 144,
+              "quantity": 4
+          },
+          {
+              "id": 98,
+              "quantity": 1
+          }
+      ]
+  }
+headers:
+- name: content-type
+  value: application/json
+  enabled: true
+- name: X-Request-ID
+  value: b90ac63a-e49a-473b-8f1e-fe0ab33c5ba0
+  enabled: true
+params:
+- name: currency
+  value: USD
+  enabled: true
+auth: null
+preRequisite: |-
+  req.setBody("products[0].id", preRes.getBody("get_all_recipes", "recipes[0].id"));
+  req.setBody("products[1].id", preRes.getBody("get_all_recipes", "recipes[1].id"));
+rules: "// Check JSON response property\npv.test(\"Check JSON response property value\",\n\tres.isValuePresent(\"sessionId\", \"abcde-67890\"),\n\treq.isFieldPresent(\"products[0].id\"),\n\treq.isFieldPresent(\"products[1].id\")\n);\n\n// Check JSON request property\npv.test(\"Check JSON request property value\", req.isValueNotPresent(\"name\", \"Parth\"));\n\n// Check JSON response property\npv.test(\"Check JSON response property exist\", res.isFieldPresent(\"userId\"));\npv.test('Check response value', res.isFieldPresent('products'));\n\n\nprint(\"Items are :  \" + req.getBody('products'));\nprint(\"Response is :  \" + res.getBody());\nprint(\"Request is :  \" + req.getBody());"
+integration:
+  whatsapp: false
+  microsoftTeams: false
+  slack: false
+  email: false
+specGuid: null
+sslGuid: null
+reqTimeout: null
+reqConnRetry: null
+reqConnPersist: null
+headerSize: null
+msgRepresentation: null
+topicName: null

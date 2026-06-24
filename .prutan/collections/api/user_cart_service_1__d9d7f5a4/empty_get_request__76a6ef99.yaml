@@ -1,0 +1,30 @@
+guid: 76a6ef99-489f-4250-845e-c1782dc3ea48
+name: empty_get_request
+collectionFormat: null
+collectionHeadersize: null
+collectionMessageRepType: null
+collectionAltUrl: null
+collectionIpConfig: null
+overview:
+  priority: null
+  summary: null
+  description: null
+format: null
+method: null
+endpoint: null
+contentType: null
+body: null
+headers: null
+params: null
+auth: null
+preRequisite: null
+rules: null
+integration: null
+specGuid: null
+sslGuid: null
+reqTimeout: null
+reqConnRetry: null
+reqConnPersist: null
+headerSize: null
+msgRepresentation: null
+topicName: null

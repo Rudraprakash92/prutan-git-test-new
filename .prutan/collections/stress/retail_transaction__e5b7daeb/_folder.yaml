@@ -1,0 +1,13 @@
+guid: e5b7daeb-df5b-4401-82fe-f18ac19c7d59
+name: retail_transaction
+type: stress
+format: Realtime
+specGuid: null
+messageRepresentationType: null
+headerSize: null
+ipConfig: null
+altUrl: null
+overview:
+  priority: null
+  summary: null
+  description: null

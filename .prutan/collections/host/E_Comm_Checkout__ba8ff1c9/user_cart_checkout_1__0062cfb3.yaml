@@ -1,0 +1,56 @@
+guid: 0062cfb3-3abf-4bf2-b636-21d870e38782
+name: user_cart_checkout_1
+collectionFormat: POST
+collectionHeadersize: null
+collectionMessageRepType: null
+collectionAltUrl: null
+collectionIpConfig: null
+overview:
+  priority: null
+  summary: Processes e-commerce checkout order and returns order confirmation with generated orderId
+  description: "<h2>Type</h2><p>Host</p><p></p><h2>Format</h2><p>REST</p><p></p><h2>Request Body</h2><p><strong>Content-Type:</strong> <code>application/json</code></p><p>The request body contains the e-commerce checkout details:</p><p>\titems array with productId, name, quantity, and unit price</p><p>\ttotalAmount for the order</p><p></p><h2>Response Body</h2><p><strong>Content-Type:</strong> <code>application/json</code></p><p>Returns an order confirmation with:</p><p>\tstatus (SUCCESS)</p><p>\torderId — dynamically generated using fn.generateAlphaNumeric(5)</p><p>\tuserId, amount, currency (INR), message, and timestamp</p><p></p><h2>Rules</h2><h3>res. (Response Rules)</h3><p>Generates a unique orderId and sets it in the response body before returning the confirmation to the client.</p>"
+format: REST
+method: POST
+endpoint: http://127.0.0.1:57591/prutan/exec/prutan/core/router/HB/ac411520-4d39-4b62-b43d-d2b26b1a62c7
+contentType: application/json
+requestBody: |-
+  {
+      "items": [
+          {
+              "productId": "P1001",
+              "name": "Wireless Mouse",
+              "quantity": 1,
+              "price": 599
+          },
+          {
+              "productId": "P2002",
+              "name": "Keyboard",
+              "quantity": 1,
+              "price": 999
+          }
+      ],
+      "totalAmount": "1598.00"
+  }
+responseBody: |-
+  {
+      "status": "SUCCESS",
+      "orderId": "{{$echo()}}",
+      "userId": "{{$echo()}}",
+      "amount": "1598.00",
+      "currency": "INR",
+      "message": "Order created successfully",
+      "timestamp": "{{$timestamp()}}"
+  }
+headers:
+- name: content-type
+  value: application/json
+  enabled: true
+params: []
+auth: null
+preRequisite: null
+rules: res.setBody('orderId', fn.generateAlphaNumeric(5));
+integration:
+  whatsapp: false
+  microsoftTeams: false
+  slack: false
+  email: false

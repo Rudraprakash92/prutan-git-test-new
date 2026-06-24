@@ -1,0 +1,70 @@
+guid: a038c780-4236-4f5f-ab0b-176cf57f6b6d
+name: send_order_sms_1
+collectionFormat: SQS
+collectionHeadersize: null
+collectionMessageRepType: null
+collectionAltUrl: null
+collectionIpConfig: null
+overview:
+  priority: null
+  summary: Publishes order payment completed event to AWS SQS for SMS notification dispatch
+  description: "<h2>Type</h2><p>API</p><p></p><h2>Format</h2><p>REALTIME</p><p></p><h2>Body</h2><p>AWS SQS message containing an ORDER_PAYMENT_COMPLETED event with:</p><p>\tOrder details — amount Rs.1598, currency INR, status CONFIRMED</p><p>\tPayment details — ISO 8583 fields for a VISA card transaction</p><p>\tNotification — SMS type with order confirmation message</p><p></p><h2>PreRequestScript</h2><p>Populates cartId, sessionId, and userId from the prior checkout request body, and paymentId from the ISO payment response RRN (field 37).</p><p></p><h2>Validation</h2><p>Validates HTTP status is 200 and confirms SQS-specific response fields MD5OfMessageAttributes, MessageId, and MD5OfMessageBody are present.</p>"
+format: REALTIME
+method: SQS
+endpoint: https://sqs.ap-south-1.amazonaws.com/432513806584/dev-team-test-queue
+contentType: application/json
+body: |-
+  {
+      "eventType": "ORDER_PAYMENT_COMPLETED",
+      "source": "Amazon.ecommerce",
+      "order": {
+          "amount": 1598,
+          "currency": "INR",
+          "status": "CONFIRMED"
+      },
+      "payment": {
+          "mode": "CARD",
+          "isoMessage": {
+              "mti": "0200",
+              "processingCode": "000000",
+              "amount": "000000159800",
+              "responseCode": "00",
+              "cardType": "VISA",
+              "maskedPan": "411111******1111"
+          }
+      },
+      "notification": {
+          "type": "SMS",
+          "message": "Your order of Rs.1598 is successful.",
+          "status": "SENT"
+      }
+  }
+headers:
+- name: content-type
+  value: application/json
+  enabled: true
+params: []
+auth:
+  secretKey: ''
+  accessKey: ''
+  region: ap-south-1
+  authType: aws
+preRequisite: |-
+  req.setBody("cartId", preReq.getBody("user_cart_checkout", "cartId"));
+  req.setBody("sessionId", preReq.getBody("user_cart_checkout", "sessionId"));
+  req.setBody("userId", preReq.getBody("user_cart_checkout", "userId"));
+  req.setBody("paymentId", preRes.getBody("payment_via_card", "37"));
+rules: "// Check status code is 200\npv.test(\"Status code is 200\", res.validateResponse(\"200\"));\n\n// Check JSON response property\npv.test(\"Validate confirmation message response\",\n\tres.isFieldPresent('MD5OfMessageAttributes'),\n\tres.isFieldPresent('MessageId'),\n\tres.isFieldPresent('MD5OfMessageBody'),\n\tres.isValuePresent(\"MD5OfMessageAttributes\", null));"
+integration:
+  whatsapp: false
+  microsoftTeams: false
+  slack: false
+  email: false
+specGuid: null
+sslGuid: null
+reqTimeout: null
+reqConnRetry: null
+reqConnPersist: null
+headerSize: null
+msgRepresentation: null
+topicName: null

@@ -1,0 +1,63 @@
+guid: 41536852-a9d7-460f-bfb3-20cbf9685b13
+name: payment_via_card_1
+collectionFormat: '8583'
+collectionHeadersize: null
+collectionMessageRepType: null
+collectionAltUrl: null
+collectionIpConfig: null
+overview:
+  priority: null
+  summary: Processes ISO 8583 card payment authorization for e-commerce checkout
+  description: <h2>Type</h2><p>Host</p><p></p><h2>Format</h2><p>ISO</p><p></p><h2>Request Body</h2><p>ISO 8583 card payment request (MTI 0200) containing transaction amount Rs.1598, expiry date, POS entry mode, condition code, and currency code INR (field 49 = 356).</p><p></p><h2>Response Body</h2><p>ISO 8583 payment response (MTI 0210) echoing all incoming transaction fields and returning approval code 00 in field 39.</p><p></p><h2>Rules</h2><h3>req. (Request Rules)</h3><p>Generates a 19-digit card number using fn.generateCard("19") and sets it in ISO field 2 of the request before forwarding to the switch.</p>
+format: ISO
+method: '8583'
+endpoint: 127.0.0.1:6666
+contentType: application/iso
+requestBody: |-
+  <!-- Card Payment Request --><isomsg>
+    <field id="0" value="0200"/>
+    <!-- Processing Code (Purchase) -->
+    <field id="3" value="000000"/>
+    <!-- Amount = Rs.1598 (paise format) -->
+    <field id="4" value="0000000000159800"/>
+    <!-- Expiry Date -->
+    <field id="14" value="2605"/>
+    <!-- POS Entry Mode -->
+    <field id="22" value="0000000000000012"/>
+    <!-- POS Condition Code -->
+    <field id="25" value="0000"/>
+    <!-- Currency Code (INR) -->
+    <field id="49" value="356"/>
+  </isomsg>
+responseBody: |-
+  <!-- Card Payment Response --><isomsg>
+    <field id="0" value="0210"/>
+    <field id="2" value="{{$echo()}}"/>
+    <field id="3" value="{{$echo()}}"/>
+    <field id="4" value="{{$echo()}}"/>
+    <field id="7" value="{{$echo()}}"/>
+    <!-- Same STAN -->
+    <field id="11" value="{{$echo()}}"/>
+    <field id="12" value="{{$echo()}}"/>
+    <field id="13" value="{{$echo()}}"/>
+    <!-- Same RRN -->
+    <field id="37" value="{{$echo()}}"/>
+    <!-- Auth Code -->
+    <field id="38" value="{{$echo()}}"/>
+    <!-- Approved -->
+    <field id="39" value="00"/>
+    <field id="41" value="{{$echo()}}"/>
+    <field id="42" value="{{$echo()}}"/>
+    <field id="48" value="{{$echo()}}"/>
+    <field id="49" value="356"/>
+  </isomsg>
+headers: []
+params: []
+auth: null
+preRequisite: null
+rules: req.setBody("2", fn.generateCard("19"));
+integration:
+  whatsapp: false
+  microsoftTeams: false
+  slack: false
+  email: false

@@ -1,0 +1,72 @@
+guid: 0bf54134-8e83-40f6-b541-91fc59c11f56
+name: get_user_details
+collectionFormat: GET
+collectionHeadersize: null
+collectionMessageRepType: null
+collectionAltUrl: null
+collectionIpConfig: null
+overview:
+  priority: null
+  summary: Retrieves user profile and account balance from HostBox
+  description: "<h2>Type</h2><p>Host</p><p></p><h2>Format</h2><p>REST</p><p></p><h2>Request Body</h2><p>None</p><p>This HostBox request does not accept a request payload.</p><p> All processing is performed based on the internally generated response body.</p><p></p><h2>Response Body</h2><p><strong>Content-Type:</strong> <code>application/json</code></p><p>The response body represents <strong>user profile and account details</strong>, including:</p><p>\tUser identification (_id, guid)</p><p>\tAccount balance (balance)</p><p>\tPersonal details (name, age, gender, email, phone)</p><p>\tCompany and address information</p><p>\tFriends list and tags</p><p>\tGreeting message</p><p>Additionally, the response is dynamically enriched with an <code>isActive</code> flag based on balance evaluation.</p><p></p><h2>Rules</h2><h3>req. (Request Rules)</h3><p>None</p><p>No request-level validation or transformation is applied since there is no request body.</p><p></p><h3>res. (Response Rules)</h3><p>The response\
+    \ rule dynamically evaluates the user’s balance and updates the response accordingly:</p><p>\tReads the balance field from the response</p><p>\tIf balance is greater than or equal to 1000:</p><p>\t\tSets isActive = true</p><p>\tIf balance is less than 1000:</p><p>\t\tSets isActive = false</p><p>This enables conditional response enrichment directly within HostBox logic.</p><p></p><p></p>"
+format: REST
+method: GET
+endpoint: http://127.0.0.1:57591/prutan/exec/prutan/core/router/HB/102981d4-c408-47d2-9b15-a8de54a2c169
+contentType: application/json
+requestBody: null
+responseBody: |-
+  {
+      "_id": "6979e84f5f6d9aaeba401e65",
+      "guid": "642648cf-0729-4a31-85f4-dfad4a9337ec",
+      "balance": 2467.92,
+      "age": 21,
+      "name": "Jody Shepard",
+      "gender": "female",
+      "company": "STREZZO",
+      "email": "jodyshepard@strezzo.com",
+      "phone": "+1 (899) 461-3525",
+      "address": "250 Everett Avenue, Wanamie, Virgin Islands, 2150",
+      "registered": "2019-05-21T08:03:17 -06:-30",
+      "tags": [
+          "cillum",
+          "ut",
+          "laborum",
+          "ipsum",
+          "nisi",
+          "labore",
+          "ipsum"
+      ],
+      "friends": [
+          {
+              "id": 0,
+              "name": "Mcintyre Le"
+          },
+          {
+              "id": 1,
+              "name": "Stanton Martin"
+          },
+          {
+              "id": 2,
+              "name": "Browning Roach"
+          }
+      ],
+      "greeting": "Hello, Jody Shepard! You have 7 unread messages."
+  }
+headers: []
+params: []
+auth: null
+preRequisite: null
+rules: |-
+  amount = res.getBody("balance");
+
+  if(amount >= 1000){
+    res.setBody("isActive", true);
+  } else {
+    res.setBody("isActive", false);
+  }
+integration:
+  whatsapp: false
+  microsoftTeams: false
+  slack: false
+  email: false

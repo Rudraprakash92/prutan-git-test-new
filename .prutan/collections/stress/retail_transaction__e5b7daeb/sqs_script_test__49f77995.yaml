@@ -1,0 +1,12 @@
+guid: 49f77995-52ba-4910-ae14-35b90f34f10a
+name: sqs_script_test
+collectionFormat: Realtime
+collectionHeadersize: null
+collectionMessageRepType: null
+collectionAltUrl: null
+collectionIpConfig: null
+overview:
+  priority: null
+  summary: null
+  description: null
+format: Realtime

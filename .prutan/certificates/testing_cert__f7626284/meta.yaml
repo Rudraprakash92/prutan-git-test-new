@@ -1,0 +1,5 @@
+guid: f7626284-92f4-4aee-a938-c05ef2c498e7
+name: testing_cert
+type: certificate
+fileFilename: prutanx.crt
+compliance: {}

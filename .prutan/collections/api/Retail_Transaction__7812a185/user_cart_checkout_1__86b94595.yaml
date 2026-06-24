@@ -1,0 +1,64 @@
+guid: 86b94595-da1b-453f-b91c-a459ade8d632
+name: user_cart_checkout_1
+collectionFormat: POST
+collectionHeadersize: null
+collectionMessageRepType: null
+collectionAltUrl: null
+collectionIpConfig: null
+overview:
+  priority: null
+  summary: Submits cart checkout request and validates order creation response
+  description: "<h2>Type</h2><p>API</p><p></p><h2>Format</h2><p>REST</p><p></p><h2>Body</h2><p><strong>Content-Type:</strong> <code>application/json</code></p><p>The checkout request payload includes:</p><p>\tuserId — randomly generated alphanumeric value</p><p>\tsessionId — UUID</p><p>\tcartId — random 6-digit number</p><p>\titems — list of products with productId, name, quantity, and price</p><p>\ttotalAmount, currency (INR), and orderDate</p><p>\tshippingAddress with name, mobile number, and address</p><p></p><h2>Validation</h2><p>Validates the checkout response:</p><p>\tConfirms HTTP status is 200</p><p>\tVerifies response status equals SUCCESS</p><p>\tChecks message equals \"Order created successfully\"</p>"
+format: REST
+method: POST
+endpoint: http://127.0.0.1:57591/prutan/exec/prutan/core/router/HB/ac411520-4d39-4b62-b43d-d2b26b1a62c7
+contentType: application/json
+body: |-
+  {
+      "userId": "{{$generateAlphaNumeric(7)}}",
+      "sessionId": "{{$guid()}}",
+      "cartId": "{{$generateRandomNumber(6)}}",
+      "items": [
+          {
+              "productId": "P1001",
+              "name": "Wireless Mouse",
+              "quantity": 1,
+              "price": 599
+          },
+          {
+              "productId": "P2002",
+              "name": "Keyboard",
+              "quantity": 1,
+              "price": 999
+          }
+      ],
+      "totalAmount": "1598.00",
+      "currency": "INR",
+      "orderDate": "{{$generateDate(yyyy-MM-dd HH:mm:ss)}}",
+      "shippingAddress": {
+          "name": "Smita Bharadwaj",
+          "mobile": "{{$generateRandomMobileNumber()}}",
+          "address": "GP Road , Maharashtra"
+      }
+  }
+headers:
+- name: content-type
+  value: application/json
+  enabled: true
+params: []
+auth: null
+preRequisite: null
+rules: "// Check status code is 200\npv.test(\"Status code is 200\", res.validateResponse(\"200\"));\n\n// Check JSON response property\npv.test(\"Validate checkout response\",\n\tres.isValuePresent(\"status\", \"SUCCESS\"),\n\tres.isValuePresent(\"message\", \"Order created successfully\"));"
+integration:
+  whatsapp: false
+  microsoftTeams: false
+  slack: false
+  email: false
+specGuid: null
+sslGuid: null
+reqTimeout: null
+reqConnRetry: null
+reqConnPersist: null
+headerSize: null
+msgRepresentation: null
+topicName: null
