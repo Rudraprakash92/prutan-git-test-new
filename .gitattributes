@@ -1,0 +1,5 @@
+*.yaml text eol=lf
+*.xml -text
+*.pem -text
+*.cer -text
+*.crt -text

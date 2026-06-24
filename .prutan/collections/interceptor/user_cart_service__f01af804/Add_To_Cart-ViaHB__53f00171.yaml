@@ -1,0 +1,82 @@
+guid: 53f00171-5065-4b0f-a4a4-91cf4a13349c
+name: Add_To_Cart-ViaHB
+collectionFormat: POST
+collectionHeadersize: null
+collectionMessageRepType: null
+collectionAltUrl: null
+collectionIpConfig: null
+overview:
+  priority: null
+  summary: Enriches add-to-cart request with generated date field before forwarding to HostBox
+  description: "<h3>Type</h3><p>\t<strong>Type:</strong> <code>interceptor</code></p><p>\tThis interceptor acts as a middleware layer to enrich and log request/response data before and after calling the backend service.</p><p></p><h3>Format</h3><p>\t<strong>Format:</strong> <code>REST</code></p><p>\tREST-based communication using JSON payloads.</p><p></p><h3>Client Method</h3><p>\t<strong>HTTP Method:</strong> <code>POST</code></p><p>\tThe client sends a POST request to add items into a cart.</p><p></p><h3>IC Endpoint</h3><p>\t<strong>Interceptor Endpoint:</strong> <code>https://app.prutan.com/prutan/core/router/IC/4838300a-e40f-4e72-b6f0-56def0c157b8</code></p><p>\tThis endpoint is exposed to the client.</p><p></p><h3>Client Endpoint</h3><p>\t<strong>Client Endpoint (HB / Backend Service):</strong> <code>https://app.prutan.com/prutan/core/router/HB/c3ffd4eb-41f3-45ee-ba4e-ee17f1c13172</code></p><p>\tThe interceptor forwards the transformed request to this backend endpoint.</p><p></p><h3>Request\
+    \ Body</h3><p>\t <strong>Request Content-Type:</strong> <code>application/json</code></p><p>\tThe request contains cart session details and a list of items to be added to the cart.</p><p>\tKey elements:</p><p>\t\tsessionId</p><p>\t\t<code>items[]</code> with <code>productId</code> and <code>quantity</code></p><p></p><h3>Params</h3><p><strong>\tRequest Parameters:</strong></p><p>\t\ttype = user</p><p>\t\tproductId = {{productId}}</p><p>\tThese parameters are forwarded along with the request.</p><p></p><h3>Headers</h3><p><strong>\tHeaders:</strong></p><p>\t\tContent-Type: application/json</p><p></p><h3>Client Request Rules</h3><p><strong>\tClient Request Rules:</strong></p><p>\t\tireq.setBody(&quot;date&quot;, fn.generateDate(&quot;yymm&quot;));</p><p>\t\tprint(&quot;Request - Items are :  &quot; + ireq.getBody(&#39;items&#39;));</p><p></p><h3>Client Request Rules – Behavior Explanation</h3><p>\tA <code>date</code> field is dynamically generated in <code>YYMM</code> format and injected\
+    \ into the request body.</p><p>\tThe interceptor logs the <code>items</code> list from the incoming request for traceability and debugging purposes.</p><p></p><h3>Response Body</h3><p>\t<strong>Response Content-Type:</strong> <code>application/json</code></p><p>\tThe backend service responds with cart details including:</p><p>\t\t<code>status</code></p><p>\t\t<code>cartId</code></p><p>\t\t<code>totalItems</code></p><p>\t\t<code>totalAmount</code></p><p>\t\tDetailed item-level pricing information</p><p></p><h3>Client Response Rules</h3><p>\t<strong>Client Response Rules:</strong></p><p>\t\tprint(&quot;response - is :  &quot; + ires.getBody());</p><p>\t\tires.setBody(&quot;date&quot;, fn.generateDate(&quot;yymm&quot;));</p><p></p><h3>Client Response Rules – Behavior Explanation</h3><p>\tThe complete response payload is logged for audit and debugging.</p><p>\tA <code>date</code> field (YYMM format) is appended to the response before returning it to the client.</p><p></p><h2>Overall Flow\
+    \ Summary</h2><p>\tClient sends a POST request to the <strong>IC endpoint</strong> with cart and item details.</p><p>\tIC enriches the request by adding a generated <code>date</code> field and logs item information.</p><p>\tThe request is forwarded to the configured <strong>HB (client) endpoint</strong>.</p><p>\tBackend processes the add-to-cart request and returns cart details.</p><p>\tIC logs the response, appends a <code>date</code> field, and sends the final response back to the client.</p>"
+format: REST
+method: POST
+endpoint: http://127.0.0.1:57591/prutan/exec/prutan/core/router/IC/53f00171-5065-4b0f-a4a4-91cf4a13349c
+clientEndpoint: http://127.0.0.1:57591/prutan/exec/prutan/core/router/HB/3528ef2c-7a22-429a-b9ec-fa2f6b25c616
+clientMethod: POST
+contentType: application/json
+requestBody: |-
+  {
+       "sessionId": "abcde-67890",
+       "items": [
+           {
+               "productId": "P001",
+               "quantity": 2
+           },
+           {
+               "productId": "P002",
+               "quantity": 1
+           }
+       ]
+  }
+responseBody: |-
+  {
+       "status": "success",
+       "cartId": "cart-7890",
+       "totalItems": 3,
+       "totalAmount": 149.97,
+       "items": [
+           {
+               "productId": "P001",
+               "productName": "Wireless Mouse",
+               "quantity": 2,
+               "pricePerUnit": 29.99
+           },
+           {
+               "productId": "P002",
+               "productName": "Keyboard",
+               "quantity": 1,
+               "pricePerUnit": 89.99
+           }
+       ]
+  }
+headers:
+- name: content-type
+  value: application/json
+  enabled: true
+params:
+- name: type
+  value: user
+  enabled: true
+- name: productId
+  value: '{{productId}}'
+  enabled: true
+auth: null
+clientSpec: null
+interceptorSpec: null
+preRequisite: null
+rules: |
+  ireq.setBody("date",fn.generateDate("yymm"));
+
+  print("Request - Items are :  " + ireq.getBody('items'));
+clientRules: |-
+  print("response - is :  " + ires.getBody());
+  ires.setBody("date",fn.generateDate("yymm"));
+integration:
+  whatsapp: false
+  microsoftTeams: false
+  slack: false
+  email: false

@@ -1,0 +1,53 @@
+guid: 81109e53-1737-40fa-80e3-4f32276f6988
+name: balance_inquiry__mini_statement
+collectionFormat: '8583'
+collectionHeadersize: '2'
+collectionMessageRepType: bytes
+collectionAltUrl: null
+collectionIpConfig: null
+overview:
+  priority: null
+  summary: Processes ISO 8583 balance inquiry and mini statement request at the switch
+  description: "<h2>Type</h2><p>Host</p><p></p><h2>Format</h2><p>ISO</p><p></p><h2>Request Body</h2><p><strong>Content-Type:</strong> <code>application/iso</code></p><p>The request body is an <strong>ISO 8583 balance inquiry request</strong>.</p><p>Key details:</p><p>\tMTI (field 0) = 0100 indicating a financial request</p><p>\tProcessing code (field 3) = 310000 for balance inquiry</p><p>\tTransaction amount (field 4) is set</p><p>\tPOS entry mode (field 22), terminal/location details (field 43), and currency (field 49) are provided</p><p>\tThe request contains only essential ISO fields required to initiate a balance inquiry</p><p></p><h2>Response Body</h2><p><strong>Content-Type:</strong> <code>application/iso</code></p><p>The response body is an <strong>ISO 8583 balance inquiry response</strong>.</p><p>It includes:</p><p>\tResponse MTI (field 0) = 0110</p><p>\tProcessing code (field 3) echoed back</p><p>\tDynamically populated fields using InBuiltFunction {{$echo()}}:</p><p>\t\tField 4\
+    \ (amount)</p><p>\t\tField 7 (transmission date &amp; time)</p><p>\t\tField 14 (expiry date)</p><p>\t\tField 35 (track 2 data)</p><p>\tResponse code (field 39) = 0000 indicating successful processing</p><p>\tAdditional balance information in field 54</p><p>\tCurrency (field 49)</p><p></p><h2>Rules</h2><h3>req. (Request Rules)</h3><p>\tReads card number from request field 2</p><p>\tReads expiry date from request field 14</p><p>\tUses these values as inputs for response construction</p><p>\tLogs key request fields for traceability:</p><p>\t\tMTI (field 0)</p><p>\t\tProcessing code (field 3)</p><p></p><h3>res. (Response Rules)</h3><p>\tDynamically constructs Track 2 data (field 35) using:</p><p>\t\tAccount number</p><p>\t\tExpiry date</p><p>\t\tRandom service code</p><p>\t\tRandom discretionary data</p><p>\tSets the generated value into response field 35</p><p>\tLogs important response fields:</p><p>\t\tField 7</p><p>\t\tField 14</p><p>\t\tField 35</p><p>This rule ensures the response ISO\
+    \ message is <strong>realistic, consistent, and dynamically generated</strong> based on the incoming request.</p>"
+format: ISO
+method: '8583'
+endpoint: 127.0.0.1:6666
+contentType: application/iso
+requestBody: |
+  <isomsg>
+    <field id="0" value="0100"/>            <!-- Primary Account Number -->
+    <field id="3" value="310000"/>                  <!-- Processing code for balance inquiry -->
+    <field id="4" value="8400000000010000"/>            <!-- Amount = 0 -->
+    <field id="22" value="0858468473474967"/>                    <!-- POS entry mode -->
+    <field id="43" value="Cranium ATM 1"/>          <!-- Card acceptor name/location -->
+    <field id="49" value="826"/>                    <!-- Currency (GBP) -->
+  </isomsg>
+responseBody: |-
+  <isomsg>
+    <field id="0" value="0110"/>
+    <field id="3" value="310000"/>
+    <field id="4" value="{{$echo()}}"/>       <!-- Function used to fetch the required value from the incoming request -->
+    <field id="7" value="{{$echo()}}"/>       <!-- Function used to fetch the required value from the incoming request -->
+    <field id="14" value="{{$echo()}}"/>      <!-- Function used to fetch the required value from the incoming request -->
+    <field id="35" value="{{$echo()}}"/>      <!-- Function used to fetch the required value from the incoming request -->
+    <field id="39" value="0000"/>                     <!-- Response code: 00 = Approved -->
+    <field id="54" value="BAL:000000050000"/>       <!-- Additional amount: balance -->
+    <field id="49" value="826"/>
+  </isomsg>
+headers: []
+params: []
+auth: null
+preRequisite: null
+rules: |-
+  print("req - Id is: 0 value is: " + req.getBody(0));
+  print("req - Id is: 3 value is: " + req.getBody(3));
+  print("res - Id is: 7 value is: " + res.getBody(7));
+  print("res - Id is: 14 value is: " + res.getBody(14));
+  print("res - Id is: 35 value is: " + res.getBody(35));
+integration:
+  whatsapp: false
+  microsoftTeams: false
+  slack: false
+  email: false

@@ -1,0 +1,17 @@
+guid: ba8ff1c9-0226-4c06-8b15-7666650eb9a1
+name: E_Comm_Checkout
+type: host
+format: REST
+specGuid: null
+messageRepresentationType: null
+headerSize: null
+ipConfig:
+- guid: 9d9935a1-f842-4db3-beef-f5f3cb628b9c
+  teamGuid: e57a1c4b-e39d-4888-9f40-6152d1b3787d
+  ip: 0.0.0.0
+  tag: Allow All IPs
+altUrl: null
+overview:
+  priority: null
+  summary: null
+  description: null

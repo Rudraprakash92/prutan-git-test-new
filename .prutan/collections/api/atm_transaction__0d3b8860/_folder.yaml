@@ -1,0 +1,13 @@
+guid: 0d3b8860-9020-40d7-8e1f-5f6a71c15add
+name: atm_transaction
+type: api
+format: null
+specGuid: null
+messageRepresentationType: null
+headerSize: null
+ipConfig: null
+altUrl: null
+overview:
+  priority: null
+  summary: null
+  description: null

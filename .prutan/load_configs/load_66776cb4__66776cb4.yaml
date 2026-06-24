@@ -1,0 +1,36 @@
+guid: 66776cb4-7094-4d6e-8662-1a4c9b8cb11b
+collectionGuid: 66776cb4-7094-4d6e-8662-1a4c9b8cb11b
+type: constant
+volume: null
+duration: null
+timeout: 5000
+virtualUsers: 10
+delay: 0
+warmup: 0
+holdSpikeFor: null
+spikeUsers: null
+spikeInterval: null
+startAfter: null
+executionTimeout: 30000
+mode: duration
+rampUpPeriod: null
+startingValue: null
+incrementUser: null
+maximumValue: null
+minimumValue: null
+decrementUser: null
+buckets:
+- start: 0
+  end: 500
+- start: 501
+  end: 1000
+- start: 1001
+  end: 2000
+- start: 2001
+  end: 5000
+- start: 5001
+  end: 10000
+executionList:
+- guid: 58d04caf-80f2-4b33-8a9e-905a1d3307fe
+  specGuid: ba024f1a-96a4-4f69-abaa-97141f802f1a
+  uri: 127.0.0.1:8002

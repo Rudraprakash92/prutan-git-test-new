@@ -1,0 +1,78 @@
+guid: 04254839-f15f-4e61-96fa-e3c409f21030
+name: cash_withdrawal
+collectionFormat: '8583'
+collectionHeadersize: '2'
+collectionMessageRepType: bytes
+collectionAltUrl: null
+collectionIpConfig: null
+overview:
+  priority: null
+  summary: Processes ISO 8583 PIN block verification for cash withdrawal transaction
+  description: "<h2>Type</h2><p>Host</p><p></p><h2>Format</h2><p>ISO</p><p></p><h2>Request Body</h2><p><strong>Content-Type:</strong> <code>application/iso</code></p><p>The request body represents an <strong>ISO 8583 PIN verification transaction</strong>.</p><p>Key details:</p><p>\tMTI (field 0) = 0200, indicating a financial transaction request</p><p>\tProcessing code (field 3) = 210000, used for PIN-related verification</p><p>\tCard number (field 2), transaction amount (field 4), and trace identifiers are provided</p><p>\tTrack 2 data (field 35) is included for card validation</p><p>\tTerminal and transaction identifiers (fields 37, 41) are present</p><p>\tCurrency is defined using field 49</p><p>This request is used to validate the customer PIN securely at the host level.</p><p></p><h2>Response Body</h2><p><strong>Content-Type:</strong> <code>application/iso</code></p><p>The response body represents the <strong>ISO 8583 PIN verification response</strong>.</p><p>It includes:</p><p>\tResponse\
+    \ MTI (field 0) = 0210</p><p>\tProcessing code (field 3) updated for the response</p><p>\tEchoed transaction and card-related fields</p><p>\tVerification result populated into field 41</p><p>\tCurrency and transaction identifiers retained from the request</p><p>The response confirms whether the submitted PIN block is valid.</p><p></p><h2>Rules</h2><h3>req. (Request Rules)</h3><p>\tReads the PIN block from request field 43</p><p>\tUses the provided PIN (1234) and key set (Default Keys 2601301251) for verification</p><p>\tRetrieves cryptographic keys for logging and validation:</p><p>\t\tPEK (PIN Encryption Key)</p><p>\t\tMAK (Message Authentication Key)</p><p>\t\tTEK (Terminal Encryption Key)</p><p></p><h3>res. (Response Rules)</h3><p>\tVerifies the PIN block using fn.verifyPinBlock</p><p>\tSets the verification result (true / false) into response field 41</p><p>\tUpdates the PEK value dynamically using fn.setPEK</p><p>\tLogs cryptographic key details for debugging and traceability</p><p>This\
+    \ logic ensures <strong>secure PIN validation</strong> and controlled key management within HostBox.</p>"
+format: ISO
+method: '8583'
+endpoint: 127.0.0.1:6666
+contentType: application/iso
+requestBody: |-
+  <isomsg>
+    <!-- org.jpos.iso.packager.GenericPackager -->
+    <header/>
+    <field id="0" value="0200"/>
+    <field id="3" value="210000"/>
+    <field id="4" value="0000000000002000"/>
+    <field id="7" value="0622125906"/>
+    <field id="11" value="000000123456"/>
+    <field id="12" value="00000000141138"/>
+    <field id="13" value="000822"/>
+    <field id="14" value="2404"/>
+    <field id="22" value="0000000000000801"/>
+    <field id="37" value="217312101237"/>
+    <field id="41" value="MF0L0010"/>
+    <field id="49" value="826"/>
+    <field id="61" value="1651412110"/>
+  </isomsg>
+responseBody: |-
+  <isomsg>
+    <!-- org.jpos.iso.packager.GenericPackager -->
+    <header/>
+    <field id="0" value="0210"/>
+    <field id="2" value="4659460000000040"/>
+    <field id="3" value="510000"/>
+    <field id="4" value="0000000000002000"/>
+    <field id="7" value="0622125906"/>
+    <field id="11" value="000000123456"/>
+    <field id="12" value="00000000141138"/>
+    <field id="13" value="000822"/>
+    <field id="14" value="2404"/>
+    <field id="22" value="0000000000000801"/>
+    <field id="35" value="4659460000000004=240421116537206404"/>
+    <field id="37" value="217312101237"/>
+    <field id="41" value="MF0L0010"/>
+    <field id="49" value="826"/>
+    <field id="61" value="1651412110"/>
+  </isomsg>
+headers: []
+params: []
+auth: null
+preRequisite: null
+rules: |-
+  pinblock = req.getBody("43");
+
+  isVerified = fn.verifyPinBlock(pinblock, "1234", "Default Keys 2606241140");
+  res.setBody("41", isVerified);
+
+  pek = fn.getPEK("Default Keys 2606241140");
+  print("PEK: " + pek);
+  mak = fn.getMAK("Default Keys 2606241140");
+  print("MAK: " + mak);
+  tek = fn.getTEK("Default Keys 2606241140");
+  print("TEK: " + tek);
+
+  fn.setPEK("Default Keys 2606241140", "1314686BA7A1A32433337544DFECA1CD14D798");
+integration:
+  whatsapp: false
+  microsoftTeams: false
+  slack: false
+  email: false

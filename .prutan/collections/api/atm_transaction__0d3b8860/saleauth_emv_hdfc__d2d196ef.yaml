@@ -1,0 +1,60 @@
+guid: d2d196ef-5b98-457f-af54-dce55e3169bd
+name: saleauth_emv_hdfc
+collectionFormat: '8583'
+collectionHeadersize: null
+collectionMessageRepType: null
+collectionAltUrl: null
+collectionIpConfig: null
+overview:
+  priority: null
+  summary: Sends EMV chip card sale authorization request to the switch
+  description: "<h2>Type</h2><p>\t<strong>Type:</strong> <code>api</code></p><p>\tRepresents an ISO 8583 API test configuration used for sending financial transaction requests and validating the response.</p><p></p><h2>Format</h2><p>\t<strong>Format:</strong> <code>ISO</code></p><p>\t<strong>Method:</strong> <code>8583</code></p><p>\t<strong>Message Representation:</strong> <code>bytes</code></p><p>\t<strong>Header Size:</strong> <code>4 bytes</code></p><p>\t<strong>Timeout:</strong> <code>5000 ms</code></p><p></p><h2>Body</h2><p>\t<strong>Content-Type:</strong> <code>application/iso</code></p><h3>Request ISO Message (0200 – Sale Authorization)</h3><p>Key fields included:</p><p>\t<code>0</code> – MTI → <code>0200</code></p><p>\t<code>2</code> – PAN → Dynamically generated</p><p>\t<code>3</code> – Processing Code</p><p>\t<code>4</code> – Transaction Amount</p><p>\t<code>7</code> – Transmission Date &amp; Time</p><p>\t<code>11</code> – STAN</p><p>\t<code>12</code> – Local Time</p><p>\t<code>14</code>\
+    \ – Expiry Date</p><p>\t<code>22</code> – POS Entry Mode</p><p>\t<code>23</code> – Card Sequence Number</p><p>\t<code>25</code> – POS Condition Code</p><p>\t<code>41</code> – Terminal ID</p><p>\t<code>42</code> – Merchant ID</p><p>\t<code>49</code> – Currency Code</p><p>\t<code>55</code> – EMV TLV Data</p><p>Field <code>55</code> contains EMV TLV encoded chip data.</p><p></p><h2>Headers</h2><p>\t<code>Content-Type: application/iso</code></p><p></p><h2>Validation (Response Validation Logic)</h2><p>Instead of transformation rules, this configuration uses <strong>Validation</strong> logic.</p><p>\tpv.test(&quot;Test Data&quot;,</p><p>    \tres.validateResponse(&quot;200&quot;),</p><p> \t  \tres.isValuePresent(&quot;0&quot;,&quot;0230&quot;),</p><p>\t    res.isValuePresent(&quot;0&quot;,&quot;0210&quot;),</p><p>    \tres.isValuePresent(&quot;37&quot;,&quot;ABC123456789&quot;),</p><p>    \tres.isValuePresent(&quot;39&quot;,&quot;0000&quot;),</p><p>    \tres.isValuePresent(&quot;39&quot;,&quot;0005&quot;),</p><p>\
+    \    \tres.isValueNotPresent(&quot;39&quot;, &quot;0000&quot;),</p><p>    \tres.isValueNotPresent(&quot;39&quot;, &quot;0005&quot;),</p><p>    \tres.isFieldNotPresent(&quot;5&quot;)</p><p>\t);</p><p></p><h2>Validation – Field-Level Checks</h2><p>The validation logic verifies:</p><p>\tResponse status is successful (<code>200</code>)</p><p>\tMTI is either:</p><p>\t\t<code>0210</code> (Financial Response)</p><p>\t\t<code>0230</code> (Advice Response)</p><p>\tRRN (Field 37) equals expected value</p><p>\tResponse code (Field 39):</p><p>\t\tApproved (<code>0000</code>)</p><p>\t\tor Alternate response (<code>0005</code>)</p><p>\tEnsures certain fields are:</p><p>\t\tPresent when required</p><p>\t\tNot present when not allowed</p><p>\tEnsures Field <code>5</code> does not exist</p><p></p><h1>EMV Validation Logic</h1><p>If EMV Tag <code>9F1A</code> is present inside Field <code>55</code>, additional EMV tag validations are performed.</p><h3>EMV Tags Checked</h3><table style=\"border: 1px solid\
+    \ #000;\"><tbody><tr><td data-row=\"1\"><strong>Tag</strong></td><td data-row=\"1\"><strong>Description</strong></td></tr><tr><td data-row=\"2\">5F2A</td><td data-row=\"2\">Transaction Currency Code</td></tr><tr><td data-row=\"3\">9A</td><td data-row=\"3\">Transaction Date</td></tr><tr><td data-row=\"4\">9F02</td><td data-row=\"4\">Amount Authorised</td></tr><tr><td data-row=\"5\">9F1A</td><td data-row=\"5\">Terminal Country Code</td></tr></tbody></table><h3></h3><h3>EMV Validation Behavior</h3><p>\tExtracts EMV tags from Field <code>55</code></p><p>\tPrints/logs tag values</p><p>\tValidates presence and absence of:</p><p>\t\t<code>9F1A</code></p><p>\t\t<code>5F09</code> (example of negative check)</p><p></p><h1>EMV &amp; TLV Details</h1><h3>EMV Data Location</h3><p>\tISO Field <code>55</code></p><p></p><h3>TLV Structure</h3><p>EMV data follows TLV encoding:</p><p>\t<strong>Tag</strong> → Identifier (e.g., 9F02)</p><p>\t<strong>Length</strong> → Length of value</p><p>\t<strong>Value</strong>\
+    \ → Actual data</p><p>Example:</p><p>9F0206000000002021</p><p>\t9F02 → Tag</p><p>\t06 → Length</p><p>\t000000002021 → Value</p><p>The validation uses:</p><p>\t<code>getEMVTagValue(field, tag)</code></p><p>\t<code>isPresent(field, tag)</code></p><p>\t<code>isNotPresent(field, tag)</code></p><p></p><h2>Overall Execution Flow</h2><p>\tISO <code>0200</code> Sale Authorization request is generated.</p><p>\tDynamic fields (PAN, Date, Time) are generated.</p><p>\tRequest is sent to host endpoint.</p><p>\tHost returns <code>0210</code> / <code>0230</code>.</p><p>\tValidation block checks:</p><p>\t\tMTI</p><p>\t\tRRN</p><p>\t\tResponse Code</p><p>\t\tField presence / absence</p><p>\tEMV TLV tags are extracted and validated if present.</p>"
+format: ISO
+method: '8583'
+endpoint: 127.0.0.1:8002
+contentType: application/iso
+body: |-
+  <isomsg>
+    <!-- org.jpos.iso.packager.GenericPackager -->
+    <header/>
+    <field id="0" value="0200"/>
+    <field id="2" value="{{$generateCard(16,41)}}"/>          <!-- Injected from environment variables. -->
+    <field id="3" value="{{sale_processing_code}}"/>          <!-- Injected from environment variables. -->
+    <field id="4" value="{{txn1_amount}}"/>                   <!-- Injected from environment variables. -->
+    <field id="7" value="{{$generateDate(MMddhhmmss)}}"/>     <!-- Function to generate a random date -->
+    <field id="11" value="000000123001"/>
+    <field id="12" value="{{$generateDate(hhmmss)}}"/>        <!-- Function to generate a random date -->
+    <field id="14" value="{{card_expiraryDate}}"/>            <!-- Injected from environment variables. -->
+    <field id="22" value="{{POS_entryMode}}"/>                <!-- Injected from environment variables. -->
+    <field id="23" value="{{Card_sequenceNumber}}"/>          <!-- Injected from environment variables. -->
+    <field id="25" value="{{POS_conditionCode}}"/>            <!-- Injected from environment variables. -->
+    <field id="41" value="{{terminal_id}}"/>                  <!-- Injected from environment variables. -->
+    <field id="42" value="{{merchant_id}}"/>                  <!-- Injected from environment variables. -->
+    <field id="49" value="{{currency_code}}"/>                <!-- Injected from environment variables. -->
+    <field id="55" value="5F2A02097882021C00950580800088009A032510149C01209F02060000000020219F03060000000000009F0902008C9F100706010A03A480109F1A0202769F26080123456789ABCDEF9F2701809F3303E0F0C89F34034103029F3501229F3602003E9F37040F00BA209F41030010518407A000000004101042030101304F07A000000004101050095649534120435245445F200F43415244484F4C4445522F4A4F484E"/>
+  </isomsg>
+headers: []
+params: []
+auth: null
+preRequisite: |-
+  req.setBody('2', preReq.getBody('balance_inquiry__mini_statement','2'));
+  req.setBody('35', preReq.getBody('balance_inquiry__mini_statement','35'));
+rules: "pv.test(\"Test Data\",\n    res.validateResponse(\"200\"),\n\tres.isValuePresent(\"0\",\"0230\"),\n\tres.isValuePresent(\"0\",\"0210\"),\n\tres.isValuePresent(\"37\",\"ABC123456789\"),\n\tres.isValuePresent(\"39\",\"0000\"),\n\tres.isValuePresent(\"39\",\"0005\"),\n    res.isValueNotPresent(\"39\", \"0000\"),\n    res.isValueNotPresent(\"39\", \"0005\"),\n\tres.isFieldNotPresent(\"5\")\n);\n\nif(res.isPresent(res.getEMVTagValue(\"55\",\"9F1A\"))){\n  // 5F2A : Transaction Currency Code\n  tagValue = res.getEMVTagValue(\"55\",\"5F2A\");\n  print(\"emv Tag - 5F2A value:- \" + tagValue);\n\n  // 9A : Transaction Date\n  tagValue = res.getEMVTagValue(\"55\",\"9A\");\n  print(\"emv Tag - 9A value:- \" + tagValue);\n\n  // 9F02 : Amount, Authorised (Numeric)\n  tagValue = res.getEMVTagValue(\"55\",\"9F02\");\n\n  print(\"emv Tag - 9F02 value:- \" + tagValue);\n\n  // 9F1A : Terminal Country Code\n  tagValue = res.getEMVTagValue(\"55\",\"9F1A\");\n  print(\"emv Tag - 9F1A value:- \" + tagValue);\n\
+  \n  print(\"emv Tag is Present: \" + res.isPresent(\"55\", \"9F1A\"));\n  print(\"emv Tag is Not Present: \" + res.isNotPresent(\"55\", \"9F1A\"));\n  print(\"emv Tag is Present: \" + res.isPresent(\"55\", \"5F09\"));\n  print(\"emv Tag is Not Present: \" + res.isNotPresent(\"55\", \"5F09\"));\n}"
+integration:
+  whatsapp: false
+  microsoftTeams: false
+  slack: false
+  email: false
+specGuid: ba024f1a-96a4-4f69-abaa-97141f802f1a
+sslGuid: null
+reqTimeout: 5000
+reqConnRetry: 0
+reqConnPersist: false
+headerSize: '2'
+msgRepresentation: bytes
+topicName: null

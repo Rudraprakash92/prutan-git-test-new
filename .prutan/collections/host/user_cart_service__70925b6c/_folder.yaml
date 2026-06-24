@@ -1,0 +1,17 @@
+guid: 70925b6c-68ea-4f77-ae6d-5027d2d6c907
+name: user_cart_service
+type: host
+format: REST
+specGuid: null
+messageRepresentationType: null
+headerSize: null
+ipConfig:
+- guid: 9d9935a1-f842-4db3-beef-f5f3cb628b9c
+  teamGuid: e57a1c4b-e39d-4888-9f40-6152d1b3787d
+  ip: 0.0.0.0
+  tag: Allow All IPs
+altUrl: null
+overview:
+  priority: null
+  summary: null
+  description: null

@@ -1,0 +1,65 @@
+guid: 50444478-11aa-4e9f-bdc9-6f560ca2f0ac
+name: payment_via_card
+collectionFormat: '8583'
+collectionHeadersize: null
+collectionMessageRepType: null
+collectionAltUrl: null
+collectionIpConfig: null
+overview:
+  priority: null
+  summary: Sends ISO 8583 card payment request linked to the checkout order via pre-request script
+  description: <h2>Type</h2><p>API</p><p></p><h2>Format</h2><p>ISO</p><p></p><h2>Body</h2><p>ISO 8583 card payment request (MTI 0200) with dynamic transaction fields — STAN, local time, local date, RRN, terminal ID, and merchant ID. Card number is a standard VISA test card. Amount is Rs.1598 (INR).</p><p></p><h2>PreRequestScript</h2><p>Sets ISO field 48 (additional data) from the previous user_cart_checkout response's orderId, linking this payment transaction to the checkout order.</p><p></p><h2>Validation</h2><p>Confirms field 126 is absent and response code (field 39) is 00 (approved). Also validates HTTP status is 200.</p>
+format: ISO
+method: '8583'
+endpoint: 127.0.0.1:8001
+contentType: application/iso
+body: |-
+  <!-- Card Payment Request --><isomsg>
+    <field id="0" value="0200"/>
+    <!-- Visa Test Card -->
+    <field id="2" value="4111111111111111"/>
+    <!-- Processing Code (Purchase) -->
+    <field id="3" value="000000"/>
+    <!-- Amount = Rs.1598 -->
+    <field id="4" value="000000159800"/>
+    <!-- Transmission Date & Time -->
+    <field id="7" value="{{$generateDate(MMddhhmmss)}}"/>
+    <!-- STAN -->
+    <field id="11" value="{{$generateRandomNumber(6)}}"/>
+    <!-- Local Time -->
+    <field id="12" value="{{$generateDate(hhmmss)}}"/>
+    <!-- Local Date -->
+    <field id="13" value="{{$generateDate(MMDD)}}"/>
+    <!-- Expiry -->
+    <field id="14" value="2605"/>
+    <!-- POS Entry Mode -->
+    <field id="22" value="0000000000000012"/>
+    <!-- POS Condition -->
+    <field id="25" value="0000"/>
+    <!-- RRN -->
+    <field id="37" value="{{$generateRandomNumber(12)}}"/>
+    <!-- Terminal ID -->
+    <field id="41" value="TERM{{$generateAlphaNumeric(4)}}"/>
+    <!-- Merchant ID -->
+    <field id="42" value="MERCH{{$generateAlphaNumeric(9)}}"/>
+    <!-- Currency Code (INR) -->
+    <field id="49" value="356"/>
+  </isomsg>
+headers: []
+params: []
+auth: null
+preRequisite: req.setBody("48", preRes.getBody("user_cart_checkout", "orderId"));
+rules: "// Check ISO response property\npv.test(\"Check Request is valid\",\n\tres.isFieldNotPresent('126'),\n\tres.isValuePresent(\"39\", \"00\"));\n\n// Check status code is 200\npv.test(\"Status code is 200\", res.validateResponse(\"200\"));"
+integration:
+  whatsapp: false
+  microsoftTeams: false
+  slack: false
+  email: false
+specGuid: ba024f1a-96a4-4f69-abaa-97141f802f1a
+sslGuid: null
+reqTimeout: 5000
+reqConnRetry: 0
+reqConnPersist: false
+headerSize: '2'
+msgRepresentation: bytes
+topicName: null

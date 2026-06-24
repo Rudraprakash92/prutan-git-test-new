@@ -1,0 +1,52 @@
+guid: 40e0bd28-880e-425d-b8b9-c76c96796313
+name: balance_inquiry__mini_statement
+collectionFormat: '8583'
+collectionHeadersize: null
+collectionMessageRepType: null
+collectionAltUrl: null
+collectionIpConfig: null
+overview:
+  priority: null
+  summary: Intercepts and forwards ISO 8583 balance inquiry transaction to the switch
+  description: "<h3>Type</h3><p>\t<strong>Type:</strong> <code>interceptor</code></p><p>\tThis interceptor works as a middleware layer for ISO 8583 messages, enriching and modifying the response before it is returned to the client.</p><p></p><h3>Format</h3><p>\t<strong>Format:</strong> <code>ISO</code></p><p>\tISO 8583 financial messaging format is used for request and response exchange.</p><p></p><h3>Client Method</h3><p>\t<strong>Method:</strong> <code>8583</code></p><p>\tIndicates ISO 8583 message-based communication instead of HTTP verbs.</p><p></p><h3>IC Endpoint</h3><p>\t<strong>Interceptor Endpoint:</strong> <code>app.prutan.com:6666</code></p><p>\tThe client connects to this interceptor endpoint for balance inquiry processing.</p><p></p><h3>Client Endpoint</h3><p>\t<strong>Client Endpoint:</strong> <code>app.prutan.com:6666</code></p><p>\tThe interceptor forwards the ISO message to the configured backend host using the same endpoint.</p><p></p><h3>Request Body</h3><p>\t<strong>Content-Type:</strong>\
+    \ <code>application/iso</code></p><p>\tThe request ISO message represents a <strong>balance inquiry</strong> transaction.</p><p>\tKey ISO fields:</p><p>\t\t<code>0</code> – MTI (<code>0100</code>)</p><p>\t\t<code>3</code> – Processing Code (<code>310000</code>)</p><p>\t\t<code>4</code> – Transaction Amount</p><p>\t\t<code>22</code> – POS Entry Mode</p><p>\t\t<code>43</code> – Card Acceptor Name/Location</p><p>\t\t<code>49</code> – Currency Code (GBP)</p><p></p><h3>Client Request Rules</h3><p>\t<strong>Client Request Rules:</strong> Not Defined</p><p>\tNo request-side transformation or enrichment is applied by this interceptor.</p><p></p><h3>Response Body</h3><p>\t<strong>Content-Type:</strong> <code>application/iso</code></p><p>\tThe response ISO message contains echoed values and standard balance inquiry response fields.</p><p>\tKey ISO fields:</p><p>\t\t<code>0</code> – MTI (<code>0110</code>)</p><p>\t\t<code>3</code> – Processing Code</p><p>\t\t<code>4</code> – Amount (echoed)</p><p>\t\
+    \t<code>7</code> – Transmission Date &amp; Time (echoed / overridden)</p><p>\t\t<code>14</code> – Expiry Date (echoed)</p><p>\t\t<code>35</code> – Track 2 Data (echoed)</p><p>\t\t<code>49</code> – Currency Code</p><p></p><h3>Client Response Rules</h3><p>\t<strong>Client Response Rules:</strong></p><p>\t\ttimestamp = fn.generateDate(&#39;YYMMddHHmm&#39;);</p><p>\t\tires.setBody(&quot;7&quot;, timestamp);</p><p></p><h3>Client Response Rules – Behavior Explanation</h3><p>\tA new transmission timestamp is dynamically generated in <code>YYMMddHHmm</code> format.</p><p>\tISO field <strong>7 (Transmission Date &amp; Time)</strong> is overridden with this generated timestamp before the response is sent back to the client.</p><p></p><h2>Overall Flow Summary</h2><p>\tClient sends an <strong>ISO 8583 balance inquiry (0100)</strong> message to the IC endpoint.</p><p>\tThe interceptor forwards the request to the configured backend host.</p><p>\tBackend responds with an <strong>0110</strong> ISO response\
+    \ message.</p><p>\tIC intercepts the response and regenerates <strong>field 7 (Transmission Date &amp; Time)</strong>.</p><p>\tThe modified ISO response is returned to the client.</p>"
+format: ISO
+method: '8583'
+endpoint: 127.0.0.1:8002
+clientEndpoint: 127.0.0.1:8000
+clientMethod: '8583'
+contentType: application/iso
+requestBody: |
+  <isomsg>
+    <field id="0" value="0100"/>            <!-- Primary Account Number -->
+    <field id="3" value="310000"/>                  <!-- Processing code for balance inquiry -->
+    <field id="4" value="8400000000010000"/>            <!-- Amount = 0 -->
+    <field id="22" value="0858468473474967"/>                    <!-- POS entry mode -->
+    <field id="43" value="Cranium ATM 1"/>          <!-- Card acceptor name/location -->
+    <field id="49" value="826"/>                    <!-- Currency (GBP) -->
+  </isomsg>
+responseBody: |-
+  <isomsg>
+    <field id="0" value="0110"/>
+    <field id="3" value="310000"/>
+    <field id="4" value="{{$echo()}}"/>   <!-- Function used to fetch the required value from the incoming request -->
+    <field id="7" value="{{$echo()}}"/>   <!-- Function used to fetch the required value from the incoming request -->
+    <field id="14" value="{{$echo()}}"/>  <!-- Function used to fetch the required value from the incoming request -->
+    <field id="35" value="{{$echo()}}"/>  <!-- Function used to fetch the required value from the incoming request -->
+    <field id="49" value="826"/>
+  </isomsg>
+headers: []
+params: []
+auth: null
+clientSpec: ba024f1a-96a4-4f69-abaa-97141f802f1a
+interceptorSpec: ba024f1a-96a4-4f69-abaa-97141f802f1a
+preRequisite: null
+rules: null
+clientRules: null
+integration:
+  whatsapp: false
+  microsoftTeams: false
+  slack: false
+  email: false

@@ -1,0 +1,66 @@
+guid: 2a972fdd-896e-4f30-9c76-316e54b5932c
+name: cash_withdrawal
+collectionFormat: '8583'
+collectionHeadersize: null
+collectionMessageRepType: null
+collectionAltUrl: null
+collectionIpConfig: null
+overview:
+  priority: null
+  summary: Intercepts cash withdrawal request and performs PIN block translation before forwarding
+  description: "<h3>Type</h3><p>\t<strong>Type:</strong> <code>interceptor</code></p><p>\tActs as a middleware to <strong>verify and translate PIN block</strong> before the ISO request reaches the host.</p><p></p><h3>Format</h3><p>\t<strong>Format:</strong> <code>ISO</code></p><p>\tUses ISO 8583 financial messaging format.</p><p></p><h3>Client Method</h3><p>\t<strong>Client Method:</strong> <code>NONE</code></p><p>\tNo direct client invocation method; interceptor works inline during ISO message flow.</p><p></p><h3>IC Endpoint</h3><p>\t<strong>Interceptor Endpoint:</strong> <code>app.prutan.com:6666</code></p><p></p><h3>Request Body</h3><p>\t<strong>Content-Type:</strong> <code>application/iso</code></p><p>\tIncoming ISO request contains minimal required fields:</p><p>\t\t<code>0</code> – MTI (<code>0200</code>)</p><p>\t\t<code>2</code> – PAN</p><p>\t\t<code>3</code> – Processing Code</p><p>\t\t<code>43</code> – PIN Block (used in rules)</p><p></p><h3>Client Request Rules</h3><p>\tpinBlock\
+    \ = ireq.getBody(&quot;43&quot;);</p><p></p><p>\tisVerified = fn.verifyPinBlock(pinBlock, &quot;1234&quot;, &quot;Default Keys 2601301251&quot;);</p><p>\tireq.setBody(&quot;41&quot;, isVerified);</p><p></p><p>\ttranslatedPinBlock = fn.translatePinBlock(pinBlock,&quot;Default Keys 2601301251&quot;,&quot;Default Keys 2601301251&quot;);</p><p>\tireq.setBody(&quot;43&quot;, translatedPinBlock);</p><p></p><h3>Client Request Rules – Behavior Explanation</h3><p>\tReads <strong>PIN Block</strong> from ISO field <code>43</code></p><p>\tVerifies the PIN using:</p><p>\t\tStatic PIN: <code>1234</code></p><p>\t\tKey Group: <code>Default Keys 2601301251</code></p><p>\tSets verification result into <strong>ISO field </strong><code><strong>41</strong></code></p><p>\tTranslates the PIN block using the same key group</p><p>\tReplaces original PIN block (<code>43</code>) with translated value before sending to host</p><p></p><h3>Response Body</h3><p>\t<strong>Content-Type:</strong> <code>application/iso</code></p><p>\t\
+    Response ISO message contains full authorization response:</p><p>\t\t<code>0</code> – MTI (<code>0210</code>)</p><p>\t\t<code>2</code> – PAN</p><p>\t\t<code>3</code> – Processing Code</p><p>\t\t<code>4</code> – Amount</p><p>\t\t<code>7</code> – Transmission Date &amp; Time</p><p>\t\t<code>11</code> – STAN</p><p>\t\t<code>12</code> – Local Transaction Time</p><p>\t\t<code>13</code> – Local Transaction Date</p><p>\t\t<code>14</code> – Expiry Date</p><p>\t\t<code>22</code> – POS Entry Mode</p><p>\t\t<code>35</code> – Track 2 Data</p><p>\t\t<code>37</code> – Retrieval Reference Number</p><p>\t\t<code>38</code> – Authorization ID</p><p>\t\t<code>39</code> – Response Code (<code>00</code>)</p><p>\t\t<code>49</code> – Currency Code</p><p>\t\t<code>61</code> – Additional Data</p><p></p><h3>Client Response Rules</h3><p>\t<strong>Client Response Rules:</strong> Not Defined</p><p>\tResponse is returned as received from the host.</p><p></p><h2>Overall Flow Summary</h2><p>\tISO <code>0200</code>\
+    \ request enters interceptor.</p><p>\tPIN Block is extracted from field <code>43</code>.</p><p>\tPIN is verified using configured keys.</p><p>\tVerification result is stored in field <code>41</code>.</p><p>\tPIN Block is translated and replaced.</p><p>\tModified ISO request is forwarded to host.</p><p>\tHost responds with <code>0210</code>.</p><p>\tInterceptor passes response back without modification.</p>"
+format: ISO
+method: '8583'
+endpoint: 127.0.0.1:8002
+clientEndpoint: 127.0.0.1:8000
+clientMethod: NONE
+contentType: application/iso
+requestBody: |-
+  <isomsg>
+    <header/>
+    <field id="0" value="0200"/>
+    <field id="3" value="210000"/>
+  </isomsg>
+responseBody: |-
+  <isomsg>
+    <header/>
+    <field id="0" value="0210"/>
+    <field id="2" value="4659460000000004"/>
+    <field id="3" value="210000"/>
+    <field id="4" value="0000000000002000"/>
+    <field id="7" value="0622125906"/>
+    <field id="11" value="000000123456"/>
+    <field id="12" value="00000000141138"/>
+    <field id="13" value="000822"/>
+    <field id="14" value="2404"/>
+    <field id="22" value="0000000000000801"/>
+    <field id="35" value="4659460000000004=240421116537206404"/>
+    <field id="37" value="217312101237"/>
+    <field id="38" value="2023"/>
+    <field id="39" value="00"/>
+    <field id="49" value="826"/>
+    <field id="61" value="1651412110"/>
+  </isomsg>
+headers: []
+params: []
+auth: null
+clientSpec: ba024f1a-96a4-4f69-abaa-97141f802f1a
+interceptorSpec: ba024f1a-96a4-4f69-abaa-97141f802f1a
+preRequisite: null
+rules: |-
+  pinBlock = ireq.getBody("43");
+
+  isVerified = fn.verifyPinBlock(pinBlock, "1234", "Default Keys 2606241140");
+  ireq.setBody("41", isVerified);
+
+  translatedPinBlock = fn.translatePinBlock(pinBlock, "Default Keys 2606241140", "Default Keys 2606241140");
+  ireq.setBody("43", translatedPinBlock);
+clientRules: null
+integration:
+  whatsapp: false
+  microsoftTeams: false
+  slack: false
+  email: false

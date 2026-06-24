@@ -1,0 +1,82 @@
+guid: ca6d4ecb-b8af-4ecd-9b43-cfb62198150b
+name: saleauth_emv_hdfc
+collectionFormat: '8583'
+collectionHeadersize: '2'
+collectionMessageRepType: bytes
+collectionAltUrl: null
+collectionIpConfig: null
+overview:
+  priority: null
+  summary: Processes EMV chip card sale authorization and enriches EMV tag data in the response
+  description: "<h2>Type</h2><p>\t<strong>Type:</strong> <code>host</code></p><p>\tThis configuration represents a HostBox (HB) service that simulates or connects to a financial host system for ISO 8583 transactions.</p><p></p><h2>Format</h2><p>\t<strong>Format:</strong> <code>ISO</code></p><p>\tCommunication is based on ISO 8583 financial messaging format.</p><p>\t<strong>Method:</strong> <code>8583</code></p><p>\tHeader Size: <code>4 bytes</code></p><p></p><h2>Request Body</h2><p>\t<strong>Content-Type:</strong> <code>application/iso</code></p><p>\t<strong>Direction:</strong> Outgoing (to Host)</p><p></p><h3>Key ISO Request Fields (0200 – Sale Authorization)</h3><p>\t<code>0</code> – MTI → <code>0200</code> (Financial Request)</p><p>\t<code>3</code> – Processing Code → Sale Processing Code</p><p>\t<code>4</code> – Transaction Amount</p><p>\t<code>11</code> – STAN</p><p>\t<code>22</code> – POS Entry Mode</p><p>\t<code>23</code> – Card Sequence Number</p><p>\t<code>25</code> – POS Condition\
+    \ Code</p><p>\t<code>41</code> – Terminal ID</p><p>\t<code>42</code> – Merchant ID</p><p>\t<code>49</code> – Currency Code</p><p>\t<code>55</code> – EMV Data (TLV Encoded)</p><p></p><h2>Headers</h2><p>\t<code>Content-Type: application/iso</code></p><p></p><h2>Request Rules (HB Logic)</h2><p>\taccNum = req.getBody(&quot;2&quot;);</p><p>\texpDate = req.getBody(&quot;14&quot;);</p><p>\tcode = fn.generateRandomNumber(3);</p><p>\tdata = fn.generateRandomNumber(10);</p><p>\tres.setBody(&quot;35&quot;, fn.concatenate(accNum,&quot;=&quot;,expDate,code,data));</p><p></p><h3>Request Rules – Behavior Explanation</h3><p>\tExtracts:</p><p>\t\tPAN (Field 2)</p><p>\t\tExpiry Date (Field 14)</p><p>\tGenerates:</p><p>\t\tRandom 3-digit code</p><p>\t\tRandom 10-digit data</p><p>\tConstructs Track 2 equivalent data</p><p>\tSets ISO Field <code>35</code> in response</p><p></p><h2>EMV &amp; TLV Handling (Important Section)</h2><h3>EMV Data Location</h3><p>\tISO Field <code>55</code> → Contains TLV encoded\
+    \ EMV data</p><p></p><h2>EMV Tag Extraction (From Request)</h2><p>\ttagValue = req.getEMVTagValue(&quot;55&quot;,&quot;5F2A&quot;);</p><p>\ttagValue = req.getEMVTagValue(&quot;55&quot;,&quot;9A&quot;);</p><p>\ttagValue = req.getEMVTagValue(&quot;55&quot;,&quot;9F02&quot;);</p><p>\ttagValue = req.getEMVTagValue(&quot;55&quot;,&quot;9F1A&quot;);</p><p></p><h3>EMV Tags Used</h3><table style=\"border: 1px solid #000;\"><tbody><tr><td data-row=\"1\"><strong>Tag</strong></td><td data-row=\"1\"><strong>Description</strong></td></tr><tr><td data-row=\"2\">5F2A</td><td data-row=\"2\">Transaction Currency Code</td></tr><tr><td data-row=\"3\">9A</td><td data-row=\"3\">Transaction Date</td></tr><tr><td data-row=\"4\">9F02</td><td data-row=\"4\">Amount Authorised</td></tr><tr><td data-row=\"5\">9F1A</td><td data-row=\"5\">Terminal Country Code</td></tr></tbody></table><p>These values are read from Field 55 and logged.</p><p></p><h2>EMV Tag Modification (Response Side)</h2><p>\tres.setEMVTagValue(&quot;55&quot;,&quot;5F2A&quot;,&quot;INR&quot;);</p><p>\t\
+    res.setEMVTagValue(&quot;55&quot;,&quot;9A&quot;,&quot;2025-12-16&quot;);</p><p>\tres.setEMVTagValue(&quot;55&quot;,&quot;9F02&quot;,&quot;16800&quot;);</p><p>\tres.setEMVTagValue(&quot;55&quot;,&quot;9F1A&quot;,&quot;THA&quot;);</p><p>\t</p><p>\tres.setEMVTagValue(&quot;56&quot;,&quot;9F1A&quot;,&quot;IND&quot;);</p><p></p><h3>EMV Modification Explanation</h3><p>\tUpdates EMV Field 55 tags in response</p><p>\tOverrides:</p><p>\t\tCurrency Code → INR</p><p>\t\tTransaction Date → 2025-12-16</p><p>\t\tAuthorised Amount → 16800</p><p>\t\tTerminal Country Code → THA</p><p>\tAdditionally sets EMV tag in Field 56</p><p></p><h1>TLV Explanation (Technical Detail)</h1><p>\tEMV data is encoded in <strong>TLV format</strong>:</p><p>\t\t<strong>T</strong> → Tag</p><p>\t\t<strong>L</strong> → Length</p><p>\t\t<strong>V</strong> → Value</p><p>Example:</p><p>\t5F2A020978</p><p>\t\t5F2A → Tag</p><p>\t\t02 → Length</p><p>\t\t0978 → Value</p><p>HB uses:</p><p>\t<code>getEMVTagValue(field, tag)</code></p><p>\t\
+    <code>setEMVTagValue(field, tag, value)</code></p><p>This allows structured EMV manipulation without manually parsing TLV hex data.</p><p></p><h2>Response Body</h2><p>\t<strong>Content-Type:</strong> <code>application/iso</code></p><p>\t<strong>Direction:</strong> Incoming (from Host)</p><p></p><h3>Key ISO Response Fields (0210 – Sale Response)</h3><p>\t<code>0</code> – MTI → <code>0210</code></p><p>\t<code>2</code> – PAN (Echo)</p><p>\t<code>3</code> – Processing Code (Echo)</p><p>\t<code>4</code> – Amount</p><p>\t<code>7</code> – Transmission Date &amp; Time</p><p>\t<code>11</code> – STAN</p><p>\t<code>12</code> – Local Time</p><p>\t<code>37</code> – RRN</p><p>\t<code>38</code> – Authorization Code</p><p>\t<code>39</code> – Response Code (<code>0000</code> → Approved)</p><p>\t<code>41</code> – Terminal ID</p><p>\t<code>42</code> – Merchant ID</p><p>\t<code>55</code> – EMV Response Data</p><p>\t<code>56</code> – Additional EMV Data</p><p></p><h2>Response Rules</h2><p>Response logic\
+    \ includes:</p><p>\tEchoing selected request fields</p><p>\tGenerating Track 2 data</p><p>\tInjecting / modifying EMV TLV tags</p><p>\tSetting authorization response code</p><p></p><h1>Overall Transaction Flow</h1><p>\tPOS sends ISO <code>0200</code> Sale Authorization request.</p><p>\tHB reads request fields including EMV Field 55.</p><p>\tEMV TLV tags are extracted and logged.</p><p>\tHost logic:</p><p>\t\tGenerates Track 2 data.</p><p>\t\tModifies EMV tags.</p><p>\tReturns ISO <code>0210</code> response.</p><p>\tResponse contains updated EMV TLV and approval code <code>0000</code>.</p>"
+format: ISO
+method: '8583'
+endpoint: 127.0.0.1:6666
+contentType: application/iso
+requestBody: |-
+  <isomsg direction="outgoing">
+    <field id="0" value="0200"/>
+    <field id="3" value="{{sale_processing_code}}"/>      <!-- Injected from environment variables. -->
+    <field id="4" value="{{txn1_amount}}"/>               <!-- Injected from environment variables. -->
+    <field id="11" value="000000123001"/>
+    <field id="22" value="{{POS_entryMode}}"/>            <!-- Injected from environment variables. -->
+    <field id="23" value="{{Card_sequenceNumber}}"/>      <!-- Injected from environment variables. -->
+    <field id="25" value="{{POS_conditionCode}}"/>        <!-- Injected from environment variables. -->
+    <field id="41" value="00000000TERM1234"/>
+    <field id="42" value="00000000000000000000MERCH1234567890"/>
+    <field id="49" value="{{currency_code}}"/>            <!-- Injected from environment variables. -->
+    <field id="55" value="5F2A02097882021C00950580800088009A032510149C01209F02060000000020219F03060000000000009F0902008C9F100706010A03A480109F1A0202769F26080123456789ABCDEF9F2701809F3303E0F0C89F34034103029F3501229F3602003E9F37040F00BA209F41030010518407A000000004101042030101304F07A000000004101050095649534120435245445F200F43415244484F4C4445522F4A4F484E"/>
+  </isomsg>
+responseBody: |-
+  <isomsg direction="incoming">
+    <field id="0" value="0210"/>
+    <field id="2" value="{{$echo()}}"/>           <!-- Function used to fetch the required value from the incoming request -->
+    <field id="3" value="{{$echo()}}"/>           <!-- Function used to fetch the required value from the incoming request -->
+    <field id="4" value="{{txn1_amount}}"/>       <!-- Injected from environment variables. -->
+    <field id="7" value="{{$echo()}}"/>           <!-- Function used to fetch the required value from the incoming request -->
+    <field id="11" value="000000123001"/>
+    <field id="12" value="{{$echo()}}"/>          <!-- Function used to fetch the required value from the incoming request -->
+    <field id="37" value="{{txn1_RRN}}"/>         <!-- Injected from environment variables. -->
+    <field id="38" value="AUTH01"/>
+    <field id="39" value="00"/>
+    <field id="41" value="{{$echo()}}"/>          <!-- Function used to fetch the required value from the incoming request -->
+    <field id="42" value="{{$echo()}}"/>          <!-- Function used to fetch the required value from the incoming request -->
+    <field id="55" value="9F2608AABBCCDDEEFF11229F2701809F101307010103A0A000010A010000000000000000009F34031E03009F3501228407A0000000041010950580200080009F1A020124"/>
+    <field id="56" value="9F2608AABBCCDDEEFF1122"/>
+  </isomsg>
+headers: []
+params: []
+auth: null
+preRequisite: null
+rules: |-
+  res.setBody("35", req.getBody("35"));
+
+  // 9F02 : Amount, Authorised (Numeric)
+  tagValue = req.getEMVTagValue("55","9F02");
+  print("emv Tag - 9F02 value:- " + tagValue);
+
+  // 9F1A : Terminal Country Code
+  tagValue = req.getEMVTagValue("55","9F1A");
+  print("emv Tag - 9F1A value:- " + tagValue);
+
+  // 9F02 : Amount, Authorised (Numeric)
+  res.setEMVTagValue("55","9F02","16800");
+
+  // 9F1A : Terminal Country Code
+  res.setEMVTagValue("55","9F1A","THA");
+
+  // Issuer Application Data (IAD) in HEX
+  res.setEMVTagValue("55","9F10","06010A03A4801000");
+
+  // Terminal Country Code for India in HEX
+  res.setEMVTagValue("56","9F1A","IND");
+integration:
+  whatsapp: false
+  microsoftTeams: false
+  slack: false
+  email: false

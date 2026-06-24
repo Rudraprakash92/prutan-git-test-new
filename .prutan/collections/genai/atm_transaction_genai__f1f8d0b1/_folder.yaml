@@ -1,0 +1,13 @@
+guid: f1f8d0b1-9239-40e3-9a21-4eb5f3018877
+name: atm_transaction_genai
+type: genai
+format: None
+specGuid: null
+messageRepresentationType: null
+headerSize: null
+ipConfig: null
+altUrl: null
+overview:
+  priority: null
+  summary: null
+  description: null

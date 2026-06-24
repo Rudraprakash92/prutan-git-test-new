@@ -1,0 +1,35 @@
+guid: a7ff6487-2241-430e-be66-87acc73393bd
+name: get_all_recipes
+collectionFormat: GET
+collectionHeadersize: null
+collectionMessageRepType: null
+collectionAltUrl: null
+collectionIpConfig: null
+overview:
+  priority: null
+  summary: Fetches all recipes from external dummy data API
+  description: "<h3>Type</h3><p>API</p><p></p><h3>Format</h3><p>REST</p><p></p><h2>Request Overview</h2><p>This is a <strong>GET REST request</strong> configured inside the PruTAN platform under a collection.</p><p>The request is executed via the <strong>Core Router (HB)</strong> endpoint and does <strong>not contain a request body</strong>, meaning it purely fetches data based on the URL and internal routing configuration.</p><p></p><p>The request is mainly used to <strong>retrieve user-related JSON data</strong> from the backend service for validation and inspection purposes.</p><p></p><h2>What the Request Does</h2><p>Sends a <strong>GET request</strong> to the configured Core Router endpoint.</p><p>No payload is sent in the request body.</p><p>The request relies on backend routing, environment setup, and internal mappings.</p><p>Once executed, it expects a <strong>JSON response</strong> containing user and related data (IDs, friends, email, company, tags, etc.).</p><p></p><h2>Response\
+    \ Handling &amp; Validation</h2><p>After receiving the response, multiple <strong>validation checks</strong> are executed to ensure data correctness and integrity:</p><p></p><h3>JSON Response Validations</h3><p>Verifies specific fields and values exist in the response:</p><p>\t<code>_id</code> must match a specific expected value.</p><p>\tNested array values like <code>friends[0].name</code> and <code>friends[1].id</code> are validated.</p><p>Ensures mandatory fields like <code>email</code> and <code>company</code> are present in the response.</p><p>Prints useful debugging information:</p><p>\tFull response body</p><p>\tSpecific fields like <code>tags</code></p><p></p><h3>JSON Request Validation</h3><p>Confirms that certain fields <strong>must not be present</strong> in the request (e.g., <code>name</code>), ensuring request cleanliness and avoiding unintended payload data.</p><p></p>"
+format: REST
+method: GET
+endpoint: https://dummyjson.com/recipes
+contentType: null
+body: null
+headers: null
+params: null
+auth: null
+preRequisite: null
+rules: "// Check JSON response property\npv.test(\"Check JSON response property value\",\n\tres.isValuePresent(\"recipes[0].id\", 1),\n\tres.isValuePresent(\"recipes[0].name\", \"Classic Margherita Pizza\"),\n\tres.isValuePresent(\"recipes[1].ingredients[1]\", \"Broccoli florets\")\n);\n\n// Check JSON request property\npv.test(\"Check JSON request property value\", res.isValueNotPresent(\"recipes[0].name\", \"Classic Margherita Pizza\"));\n\n// Check JSON response property\npv.test(\"Check JSON response property exist\", res.isFieldPresent(\"recipes\"));\n\n\nprint(\"Recipes are :  \" + res.getBody('recipes[0]'));\nprint(\"Response is :  \" + res.getBody());"
+integration:
+  whatsapp: false
+  microsoftTeams: false
+  slack: false
+  email: false
+specGuid: null
+sslGuid: null
+reqTimeout: null
+reqConnRetry: null
+reqConnPersist: null
+headerSize: null
+msgRepresentation: null
+topicName: null

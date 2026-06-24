@@ -1,0 +1,28 @@
+guid: 03212427-962e-47a6-99b3-da1079dac184
+name: Trial Account's team Environment
+params:
+- key: currency_code
+  value: '840'
+- key: POS_conditionCode
+  value: '0000'
+- key: terminal_id
+  value: 00000000TERM1234
+- key: card_expiraryDate
+  value: '2607'
+- key: txn1_amount
+  value: '0000000000010000'
+- key: sale_processing_code
+  value: '000000'
+- key: productId
+  value: '1000'
+- key: Card_sequenceNumber
+  value: '001'
+- key: txn1_RRN
+  value: ABC123456789
+- key: POS_entryMode
+  value: '0000000000000051'
+- key: merchant_id
+  value: 00000000000000000000MERCH1234567890
+- key: sessionId
+  value: abcde-67890
+compliance: null

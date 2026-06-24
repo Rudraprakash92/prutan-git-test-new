@@ -1,0 +1,12 @@
+guid: 2d0979e4-4f3c-4a52-bd5b-159281aaed47
+name: Stress Request
+collectionFormat: REST
+collectionHeadersize: null
+collectionMessageRepType: null
+collectionAltUrl: null
+collectionIpConfig: null
+overview:
+  priority: null
+  summary: null
+  description: null
+format: REST

@@ -1,0 +1,77 @@
+guid: 5d5f8972-b026-4337-9d28-19475260f880
+name: get_user_details
+collectionFormat: GET
+collectionHeadersize: null
+collectionMessageRepType: null
+collectionAltUrl: null
+collectionIpConfig: null
+overview:
+  priority: null
+  summary: Intercepts user details response and conditionally adjusts balance based on isActive flag
+  description: "<h3>Type</h3><p>\t<strong>Type:</strong> <code>interceptor</code></p><p>\tThis interceptor acts as a control layer between the client and backend service, allowing response manipulation before returning data to the client.</p><p></p><h3>Format</h3><p>\t<strong>Format:</strong> <code>REST</code></p><p>\tCommunication is based on REST over HTTP.</p><p></p><h3>Client Method</h3><p>\t<strong>HTTP Method:</strong> <code>GET</code></p><p>\tThe client invokes this interceptor using a GET request.</p><p></p><h3>IC Endpoint</h3><p>\t<strong>Interceptor Endpoint:</strong> <code>http://localhost:9090/prutan/core/router/IC/1700f85e-8373-4682-a0e5-de9f52abadcb</code></p><p>\tThis is the endpoint exposed to the client.</p><p></p><h3>Client Endpoint</h3><p>\t<strong>Client Endpoint (Downstream Service):</strong> <code>http://localhost:9090/prutan/core/router/HB/08168977-e775-4b0c-9531-5ef6eaf1dd6c</code></p><p>\tThe interceptor forwards the request to this backend (HB) endpoint.</p><p></p><h3>Request\
+    \ Body</h3><p>\t<strong>Request Body:</strong> Not Applicable</p><p>\tSince the HTTP method is <code>GET</code>, no request payload is sent.</p><p></p><h3>Client Request Rules</h3><p>\t<strong>Client Request Rules:</strong> Not Defined</p><p>\tNo transformation or validation rules are applied to the incoming client request.</p><p></p><h3>Response Body</h3><p>\t<strong>Response Content-Type:</strong> <code>application/json</code></p><p>\tThe backend service returns user-related details such as profile information, contact data, tags, and friend list.</p><p>\tThe response is intercepted and evaluated before being returned to the client.</p><p></p><h3>Client Response Rules</h3><p>\tClient Response Rules:</p><p>isActive = ires.getBody(&quot;isActive&quot;);</p><p>if (isActive) {</p><p>  ires.setBody(&quot;balance&quot;, ires.getBody(&quot;balance&quot;));</p><p>} else {</p><p>  ires.setBody(&quot;balance&quot;, 0.0);</p><p>}</p><p></p><h3>Client Response Rules – Behavior Explanation</h3><p>\t\
+    The interceptor reads the <code>isActive</code> flag from the response.</p><p>\tIf the user is marked as <strong>active</strong>:</p><p>\t\tThe original <code>balance</code> value is passed through without change.</p><p>\tIf the user is <strong>inactive</strong>:</p><p>\t\tThe <code>balance</code> field is forcibly set to <code>0.0</code>, regardless of the original value.</p><p>This rule ensures that inactive users never receive balance information.</p><p></p><h2>Overall Flow Summary</h2><p>\tClient sends a GET request to the <strong>IC endpoint</strong>.</p><p>\tIC forwards the request to the configured <strong>client (HB) endpoint</strong>.</p><p>\tBackend service responds with user details.</p><p>\tIC applies <strong>client response rules</strong> based on <code>isActive</code>.</p><p>\tModified response is returned to the client.</p><p></p>"
+format: REST
+method: GET
+endpoint: http://127.0.0.1:57591/prutan/exec/prutan/core/router/IC/5d5f8972-b026-4337-9d28-19475260f880
+clientEndpoint: http://127.0.0.1:57591/prutan/exec/prutan/core/router/HB/102981d4-c408-47d2-9b15-a8de54a2c169
+clientMethod: GET
+contentType: application/json
+requestBody: null
+responseBody: |-
+  {
+      "_id": "6979e84f5f6d9aaeba401e65",
+      "guid": "642648cf-0729-4a31-85f4-dfad4a9337ec",
+      "age": 21,
+      "name": "Jody Shepard",
+      "gender": "female",
+      "company": "STREZZO",
+      "email": "jodyshepard@strezzo.com",
+      "phone": "+1 (899) 461-3525",
+      "address": "250 Everett Avenue, Wanamie, Virgin Islands, 2150",
+      "registered": "2019-05-21T08:03:17 -06:-30",
+      "tags": [
+          "cillum",
+          "ut",
+          "laborum",
+          "ipsum",
+          "nisi",
+          "labore",
+          "ipsum"
+      ],
+      "friends": [
+          {
+              "id": 0,
+              "name": "Mcintyre Le"
+          },
+          {
+              "id": 1,
+              "name": "Stanton Martin"
+          },
+          {
+              "id": 2,
+              "name": "Browning Roach"
+          }
+      ],
+      "greeting": "Hello, Jody Shepard! You have 7 unread messages."
+  }
+headers: null
+params: null
+auth: null
+clientSpec: null
+interceptorSpec: null
+preRequisite: null
+rules: null
+clientRules: |-
+  isActive = ires.getBody("isActive");
+
+  if(isActive){
+    ires.setBody("balance", ires.getBody("balance"));
+  } else {
+    ires.setBody("balance", 0.0);
+  }
+integration:
+  whatsapp: false
+  microsoftTeams: false
+  slack: false
+  email: false

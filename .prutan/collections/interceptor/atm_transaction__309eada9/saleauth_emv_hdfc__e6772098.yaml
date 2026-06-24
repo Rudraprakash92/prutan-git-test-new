@@ -1,0 +1,81 @@
+guid: e6772098-44f1-42db-8d61-f9cbf103c099
+name: saleauth_emv_hdfc
+collectionFormat: '8583'
+collectionHeadersize: null
+collectionMessageRepType: null
+collectionAltUrl: null
+collectionIpConfig: null
+overview:
+  priority: null
+  summary: Intercepts EMV sale authorization, enriches Track 2 data and EMV tags before forwarding
+  description: "<h3>Type</h3><p>\t<strong>Type:</strong> <code>interceptor</code></p><p>\tActs as a middleware to <strong>verify and translate PIN block</strong> before the ISO request reaches the host.</p><p></p><h3>Format</h3><p>\t<strong>Format:</strong> <code>ISO</code></p><p>\tUses ISO 8583 financial messaging format.</p><p></p><h3>Client Method</h3><p>\t<strong>Client Method:</strong> <code>NONE</code></p><p>\tNo direct client invocation method; interceptor works inline during ISO message flow.</p><p></p><h3>IC Endpoint</h3><p>\t<strong>Interceptor Endpoint:</strong> <code>app.prutan.com:6666</code></p><p></p><h3>Request Body</h3><p>\t<strong>Content-Type:</strong> <code>application/iso</code></p><p>\tIncoming ISO request contains minimal required fields:</p><p>\t\t<code>0</code> – MTI (<code>0200</code>)</p><p>\t\t<code>2</code> – PAN</p><p>\t\t<code>3</code> – Processing Code</p><p>\t\t<code>43</code> – PIN Block (used in rules)</p><p></p><h3>Client Request Rules</h3><p>\tpinBlock\
+    \ = ireq.getBody(&quot;43&quot;);</p><p></p><p>\tisVerified = fn.verifyPinBlock(pinBlock, &quot;1234&quot;, &quot;Default Keys 2601301251&quot;);</p><p>\tireq.setBody(&quot;41&quot;, isVerified);</p><p></p><p>\ttranslatedPinBlock = fn.translatePinBlock(pinBlock,&quot;Default Keys 2601301251&quot;,&quot;Default Keys 2601301251&quot;);</p><p>\tireq.setBody(&quot;43&quot;, translatedPinBlock);</p><p></p><h3>Client Request Rules – Behavior Explanation</h3><p>\tReads <strong>PIN Block</strong> from ISO field <code>43</code></p><p>\tVerifies the PIN using:</p><p>\t\tStatic PIN: <code>1234</code></p><p>\t\tKey Group: <code>Default Keys 2601301251</code></p><p>\tSets verification result into <strong>ISO field </strong><code><strong>41</strong></code></p><p>\tTranslates the PIN block using the same key group</p><p>\tReplaces original PIN block (<code>43</code>) with translated value before sending to host</p><p></p><h3>Response Body</h3><p>\t<strong>Content-Type:</strong> <code>application/iso</code></p><p>\t\
+    Response ISO message contains full authorization response:</p><p>\t\t<code>0</code> – MTI (<code>0210</code>)</p><p>\t\t<code>2</code> – PAN</p><p>\t\t<code>3</code> – Processing Code</p><p>\t\t<code>4</code> – Amount</p><p>\t\t<code>7</code> – Transmission Date &amp; Time</p><p>\t\t<code>11</code> – STAN</p><p>\t\t<code>12</code> – Local Transaction Time</p><p>\t\t<code>13</code> – Local Transaction Date</p><p>\t\t<code>14</code> – Expiry Date</p><p>\t\t<code>22</code> – POS Entry Mode</p><p>\t\t<code>35</code> – Track 2 Data</p><p>\t\t<code>37</code> – Retrieval Reference Number</p><p>\t\t<code>38</code> – Authorization ID</p><p>\t\t<code>39</code> – Response Code (<code>00</code>)</p><p>\t\t<code>49</code> – Currency Code</p><p>\t\t<code>61</code> – Additional Data</p><p></p><h3>Client Response Rules</h3><p>\t<strong>Client Response Rules:</strong> Not Defined</p><p>\tResponse is returned as received from the host.</p><p></p><h2>Overall Flow Summary</h2><p>\tISO <code>0200</code>\
+    \ request enters interceptor.</p><p>\tPIN Block is extracted from field <code>43</code>.</p><p>\tPIN is verified using configured keys.</p><p>\tVerification result is stored in field <code>41</code>.</p><p>\tPIN Block is translated and replaced.</p><p>\tModified ISO request is forwarded to host.</p><p>\tHost responds with <code>0210</code>.</p><p>\tInterceptor passes response back without modification.</p>"
+format: ISO
+method: '8583'
+endpoint: 127.0.0.1:8002
+clientEndpoint: 127.0.0.1:8000
+clientMethod: '8583'
+contentType: application/iso
+requestBody: |-
+  <isomsg direction="outgoing">
+    <field id="0" value="0200"/>
+    <field id="3" value="{{sale_processing_code}}"/>      <!-- Injected from environment variables. -->
+    <field id="4" value="{{txn1_amount}}"/>               <!-- Injected from environment variables. -->
+    <field id="11" value="000000123001"/>
+    <field id="22" value="{{POS_entryMode}}"/>            <!-- Injected from environment variables. -->
+    <field id="23" value="{{Card_sequenceNumber}}"/>      <!-- Injected from environment variables. -->
+    <field id="25" value="{{POS_conditionCode}}"/>        <!-- Injected from environment variables. -->
+    <field id="41" value="00000000TERM1234"/>
+    <field id="42" value="00000000000000000000MERCH1234567890"/>
+    <field id="49" value="{{currency_code}}"/>            <!-- Injected from environment variables. -->
+    <field id="55" value="5F2A02097882021C00950580800088009A032510149C01209F02060000000020219F03060000000000009F0902008C9F100706010A03A480109F1A0202769F26080123456789ABCDEF9F2701809F3303E0F0C89F34034103029F3501229F3602003E9F37040F00BA209F41030010518407A000000004101042030101304F07A000000004101050095649534120435245445F200F43415244484F4C4445522F4A4F484E"/>
+  </isomsg>
+responseBody: |-
+  <isomsg direction="incoming">
+    <field id="0" value="0210"/>
+    <field id="2" value="{{$echo()}}"/>           <!-- Function used to fetch the required value from the incoming request -->
+    <field id="3" value="{{$echo()}}"/>           <!-- Function used to fetch the required value from the incoming request -->
+    <field id="4" value="{{txn1_amount}}"/>       <!-- Injected from environment variables. -->
+    <field id="7" value="{{$echo()}}"/>           <!-- Function used to fetch the required value from the incoming request -->
+    <field id="11" value="000000123001"/>
+    <field id="12" value="{{$echo()}}"/>          <!-- Function used to fetch the required value from the incoming request -->
+    <field id="37" value="{{txn1_RRN}}"/>         <!-- Injected from environment variables. -->
+    <field id="38" value="AUTH01"/>
+    <field id="39" value="0000"/>
+    <field id="41" value="{{$echo()}}"/>          <!-- Function used to fetch the required value from the incoming request -->
+    <field id="42" value="{{$echo()}}"/>          <!-- Function used to fetch the required value from the incoming request -->
+    <field id="55" value="9F2608AABBCCDDEEFF11229F2701809F100806010A03A48010009F34031E03009F3501228407A0000000041010950580200080009F1A0207649F0206000001680000"/>
+  </isomsg>
+headers: []
+params: []
+auth: null
+clientSpec: ba024f1a-96a4-4f69-abaa-97141f802f1a
+interceptorSpec: ba024f1a-96a4-4f69-abaa-97141f802f1a
+preRequisite: null
+rules: |-
+  accNum = ireq.getBody("2");
+  expDate = ireq.getBody("14");
+  code = fn.generateRandomNumber(3);
+  data = fn.generateRandomNumber(10);
+  ireq.setBody("35", fn.concatenate(accNum,"=",expDate,code,data));
+clientRules: |-
+  // 5F2A : Transaction Currency Code
+  tagValue = ires.getEMVTagValue("55","5F2A");
+  print("emv Tag - 5F2A value:- " + tagValue);
+
+  // 9A : Transaction Date
+  tagValue = ires.getEMVTagValue("55","9A");
+  print("emv Tag - 9A value:- " + tagValue);
+
+  // 5F2A : Transaction Currency Code
+  ires.setEMVTagValue("55","5F2A","INR");
+
+  // 9A : Transaction Date
+  ires.setEMVTagValue("55","9A","2026-04-16");
+integration:
+  whatsapp: false
+  microsoftTeams: false
+  slack: false
+  email: false

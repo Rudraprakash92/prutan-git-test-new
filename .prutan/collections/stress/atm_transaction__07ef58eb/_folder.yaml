@@ -1,0 +1,17 @@
+guid: 07ef58eb-c420-4a31-ae1e-ec8c2df58dbd
+name: atm_transaction
+type: stress
+format: ISO
+specGuid: ba024f1a-96a4-4f69-abaa-97141f802f1a
+messageRepresentationType: null
+headerSize: null
+ipConfig:
+- guid: 9d9935a1-f842-4db3-beef-f5f3cb628b9c
+  teamGuid: e57a1c4b-e39d-4888-9f40-6152d1b3787d
+  ip: 0.0.0.0
+  tag: Allow All IPs
+altUrl: null
+overview:
+  priority: null
+  summary: null
+  description: null

@@ -1,0 +1,12 @@
+guid: 0092aa60-4b67-46e8-8591-05fed747cccb
+name: list_recipie_add_to_cart_workflow
+collectionFormat: null
+collectionHeadersize: null
+collectionMessageRepType: null
+collectionAltUrl: null
+collectionIpConfig: null
+overview:
+  priority: null
+  summary: null
+  description: null
+prompt: Send request get_all_recipes and then send post request add_to_cart

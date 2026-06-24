@@ -1,0 +1,69 @@
+guid: 607534ab-8684-4daf-ade7-e7455a3ced8c
+name: cash_withdrawal
+collectionFormat: '8583'
+collectionHeadersize: null
+collectionMessageRepType: null
+collectionAltUrl: null
+collectionIpConfig: null
+overview:
+  priority: null
+  summary: Sends ISO 8583 cash withdrawal request with dynamic PIN block verification
+  description: "<h2>Type</h2><p>API</p><p></p><h2>Format</h2><p>ISO</p><p></p><h2>Body</h2><p><strong>Content-Type:</strong> <code>application/iso</code></p><p>This request represents an <strong>ISO 8583 PIN Verification transaction</strong>.</p><p>Key details:</p><p>\tMTI (field 0) is 0200, indicating a financial transaction request</p><p>\tProcessing code (field 3) defines the PIN verification operation</p><p>\tTransaction amount is provided in field 4</p><p>\tCard and transaction identifiers are populated using standard ISO fields</p><p>\tPIN Block is dynamically generated using an InBuiltFunction:</p><p>\t\t{{$generatePinBlock(1234, Default Keys 2601301251)}} in field 43</p><p>This ensures secure PIN handling without exposing sensitive information.</p>"
+format: ISO
+method: '8583'
+endpoint: 127.0.0.1:8002
+contentType: application/iso
+body: |-
+  <isomsg>
+    <!-- org.jpos.iso.packager.GenericPackager -->
+    <header/>
+    <field id="0" value="0200"/>
+    <field id="2" value="4659460000000004"/>
+    <field id="3" value="210000"/>
+    <field id="4" value="0000000000002000"/>
+    <field id="7" value="0622125906"/>
+    <field id="11" value="000000123456"/>
+    <field id="12" value="00000000141138"/>
+    <field id="13" value="000822"/>
+    <field id="14" value="2404"/>
+    <field id="22" value="0000000000000801"/>
+    <field id="35" value="4659460000000004=240421116537206404"/>
+    <field id="37" value="217312101237"/>
+    <field id="41" value="MF0L0010"/>
+    <field id="43" value="{{$generatePinBlock(1234, Default Keys 2606241140)}}"/>  <!-- Function to generate a pinblock -->
+    <field id="49" value="826"/>
+    <field id="61" value="1651412110"/>
+  </isomsg>
+headers: []
+params: []
+auth: null
+preRequisite: |-
+  req.setBody('2', preReq.getBody('balance_inquiry__mini_statement','2'));
+  req.setBody('35', preReq.getBody('balance_inquiry__mini_statement','35'));
+rules: |2
+                  // Check ISO response property
+  pv.test("Check ISO request & response property", res.isValuePresent("0", "0210"));
+
+  // Check ISO response property
+  pv.test("Check ISO request & response property", res.isValuePresent("3", "210000"));
+
+  // Check ISO response property
+  pv.test("Check ISO request & response property", res.isValuePresent("39", "0000"));
+  pv.test("Check ISO request & response property", res.isFieldPresent("5"));
+  pv.test("Check ISO request & response property", res.isFieldPresent("35"));
+  pv.test("Check ISO request & response property", res.isFieldNotPresent("35"));
+
+  print("Response - Field 39 is :  " + res.getBody(39));
+integration:
+  whatsapp: false
+  microsoftTeams: false
+  slack: false
+  email: false
+specGuid: ba024f1a-96a4-4f69-abaa-97141f802f1a
+sslGuid: null
+reqTimeout: 5000
+reqConnRetry: 0
+reqConnPersist: false
+headerSize: '2'
+msgRepresentation: bytes
+topicName: null

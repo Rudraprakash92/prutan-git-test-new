@@ -1,0 +1,72 @@
+guid: 58d04caf-80f2-4b33-8a9e-905a1d3307fe
+name: balance_inquiry__mini_statement
+collectionFormat: '8583'
+collectionHeadersize: null
+collectionMessageRepType: null
+collectionAltUrl: null
+collectionIpConfig: null
+overview:
+  priority: null
+  summary: Sends ISO 8583 balance inquiry mini statement transaction to the ATM switch
+  description: "<h2>Type</h2><p>API</p><p></p><h2>Format</h2><p>ISO</p><p></p><h2>Body</h2><p><strong>Content-Type:</strong> <code>application/iso</code></p><p>The request body represents an <strong>ISO 8583 Balance Inquiry – Mini Statement</strong> message.</p><p>Key points:</p><p>\tISO message is wrapped inside &lt;isomsg&gt;</p><p>\tMTI (field 0) is set to 0100 indicating a financial request</p><p>\tProcessing code (field 3) defines the balance inquiry operation</p><p>\tCard, terminal, and transaction details are passed using standard ISO fields</p><p>\tDynamic values are populated using InBuiltFunctions:</p><p>\t\t{{$generateDate(...)}} for date/time fields</p><p>\t\t{{$generateRandomNumber(...)}} for trace and sequence numbers</p><p>\t\t{{$generateAlphaNumeric(...)}} for terminal and merchant identifiers</p><p>These dynamic values ensure each request is <strong>unique and valid</strong> per transaction.</p><p></p><h2>PreRequestScript</h2><p>The pre-request script dynamically prepares\
+    \ sensitive ISO fields before sending the request:</p><p>\tGenerates a valid card number and sets it in field 2</p><p>\tExtracts account number and expiry date</p><p>\tDynamically constructs Track 2 data (field 35) using:</p><p>\t\tAccount number</p><p>\t\tExpiry date</p><p>\t\tRandom service code</p><p>\t\tRandom discretionary data</p><p>This ensures realistic ISO data generation without hardcoding sensitive values.</p><p></p><h2>Validation</h2><p>Validations confirm both <strong>request acceptance</strong> and <strong>response correctness</strong>:</p><h3>ISO Response Validation</h3><p>\tConfirms response MTI (field 0) is 0110</p><p>\tVerifies processing code (field 3) remains consistent</p><p>\tValidates response code (field 39) equals 0000 (success)</p><h3>Field Presence Validation</h3><p>\tEnsures expected fields exist in the response:</p><p>\t\tField 5</p><p>\tConfirms field handling rules:</p><p>\t\tField 35 presence and non-presence are explicitly validated</p><h3>Logs</h3><p>\t\
+    Prints response code (<code>field 39</code>) for transaction outcome verification</p>"
+format: ISO
+method: '8583'
+endpoint: 127.0.0.1:8002
+contentType: application/iso
+body: |-
+  <!-- Balance Inquiry - Mini-Statement Request -->
+  <isomsg>
+    <field id="0" value="0100"/>
+    <field id="2" value="4659460000000004"/>
+    <field id="3" value="310000"/>
+    <field id="4" value="8400000000010000"/>
+    <field id="7" value="{{$generateDate(MMddhhmmss)}}"/>     <!-- Function to generate a random date -->
+    <field id="11" value="{{$generateRandomNumber(12)}}"/>    <!-- Function to generate a random number -->
+    <field id="12" value="{{$generateDate(YYMMDDhhmmss)}}"/>  <!-- Function to generate a random date -->
+    <field id="13" value="{{$generateDate(YYMM)}}"/>          <!-- Function to generate a random date -->
+    <field id="14" value="{{$generateDate(YYMM)}}"/>          <!-- Function to generate a random date -->
+    <field id="21" value="H123456789012345678900"/>
+    <field id="22" value="0858468473474967"/>
+    <field id="23" value="{{$generateRandomNumber(3)}}"/>     <!-- Function to generate a random number -->
+    <field id="24" value="113"/>
+    <field id="26" value="0743"/>
+    <field id="35" value="4659460000000004=2502894603657636"/>
+    <field id="41" value="{{$generateAlphaNumeric(16)}}"/>    <!-- Function to generate a random string -->
+    <field id="42" value="{{$generateAlphaNumeric(35)}}"/>    <!-- Function to generate a random string -->
+    <field id="43" value="Cranium ATM 1"/>          <!-- Card acceptor name/location -->
+    <field id="45" value="{{$generateAlphaNumeric(76)}}"/>    <!-- Function to generate a random string -->
+    <field id="49" value="826"/>
+  </isomsg>
+headers: []
+params: []
+auth: null
+preRequisite: null
+rules: |-
+  // Check ISO response property
+  pv.test("Check ISO request & response property", res.isValuePresent("0", "0110"));
+
+  // Check ISO response property
+  pv.test("Check ISO request & response property", res.isValuePresent("3", "310000"));
+
+  // Check ISO response property
+  pv.test("Check ISO request & response property", res.isValuePresent("39", "0000"));
+  pv.test("Check ISO request & response property", res.isFieldPresent("5"));
+  pv.test("Check ISO request & response property", res.isFieldPresent("35"));
+  pv.test("Check ISO request & response property", res.isFieldNotPresent("35"));
+
+  print("Response - Field 39 is :  " + res.getBody(39));
+integration:
+  whatsapp: false
+  microsoftTeams: false
+  slack: false
+  email: false
+specGuid: ba024f1a-96a4-4f69-abaa-97141f802f1a
+sslGuid: null
+reqTimeout: 5000
+reqConnRetry: 0
+reqConnPersist: false
+headerSize: '2'
+msgRepresentation: bytes
+topicName: null
